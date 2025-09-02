@@ -1,0 +1,53 @@
+<!doctype html>
+<html lang="es">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <title>Sobre mí · Mi Sitio</title>
+  <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet">
+  <link href="/assets/css/custom.css" rel="stylesheet">
+</head>
+<body>
+<nav class="navbar navbar-expand-lg bg-body-tertiary fixed-top">
+  <div class="container">
+    <a class="navbar-brand" href="/">Mi Sitio</a>
+    <button class="navbar-toggler" type="button" data-bs-toggle="collapse" data-bs-target="#nav">
+      <span class="navbar-toggler-icon"></span>
+    </button>
+    <div id="nav" class="collapse navbar-collapse">
+      <ul class="navbar-nav ms-auto">
+        <li class="nav-item"><a class="nav-link" href="/">Inicio</a></li>
+        <li class="nav-item"><a class="nav-link active" href="/about.html">Sobre mí</a></li>
+        <li class="nav-item"><a class="nav-link" href="/contact.html">Contacto</a></li>
+      </ul>
+    </div>
+  </div>
+</nav>
+
+<main class="container">
+  <h1 class="mb-3">Sobre mí</h1>
+  <p class="lead">Esta página describe quiénes somos y qué hacemos.</p>
+
+  <div class="row g-4">
+    <div class="col-lg-8">
+      <p>Texto de ejemplo sobre el proyecto, misión, historia, etc.</p>
+      <p>Usa componentes Bootstrap para maquetar y mantener el estilo consistente.</p>
+    </div>
+    <div class="col-lg-4">
+      <div class="list-group">
+        <a class="list-group-item list-group-item-action active">Valores</a>
+        <a class="list-group-item list-group-item-action">Velocidad</a>
+        <a class="list-group-item list-group-item-action">Simplicidad</a>
+        <a class="list-group-item list-group-item-action">Seguridad</a>
+      </div>
+    </div>
+  </div>
+</main>
+
+<footer class="container text-center">
+  <small>&copy; <span id="year"></span> Mi Sitio</small>
+</footer>
+<script>document.getElementById('year').textContent = new Date().getFullYear();</script>
+<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js"></script>
+</body>
+</html>

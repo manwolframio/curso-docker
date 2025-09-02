@@ -1,0 +1,15 @@
+body { padding-top: 4.5rem; }
+.navbar-brand { font-weight: 700; letter-spacing: .3px; }
+.hero {
+  padding: 4rem 0;
+}
+.card-hover:hover {
+  transform: translateY(-2px);
+  transition: transform .2s ease;
+}
+footer {
+  margin-top: 3rem;
+  padding: 2rem 0;
+  border-top: 1px solid rgba(0,0,0,.075);
+  color: #6c757d;
+}

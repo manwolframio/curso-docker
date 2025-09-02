@@ -258,9 +258,106 @@ Esta imagen intenta crear un archivo pero no le hemos dado permisos al nuevo usu
 prueba_user % docker run ejemplo        
 >> bin/bash: line 1: usuario.txt: Permission denied
 ```
+### Entrypoint
+Cuando el comando que se quiere ejecutar en docker requiere de lanzar varios procesos por ejemplo o de descargar cosas que varian con el tiempo como un repositorio con un conjunto de datos, como por ejemplo un modelo de AI de hugginface podemos ejecutarlos con un entrypoint o un punto de entrada a traves del cual podemos ejecutar una lista de comandos completa cada vez que se instancie un contenedor desde a la imagnen.
 
+Esto sigue la filosifía DevOps en la que el contenido/modelo/datos del contenedor se actualizan sin necesidad de reconstruir la imagen, haciendo que con un reinicio del contenedor sea suficiente.
 
-### Voulme
+Otra opcion util de usar entrypoints es que muchas veces las aplicaciones que ejecutemos no son capaces de interpretar variables de entorno (ENV`s) por si mismos por lo que se puede hacer uso de templates que tomen la variable de entorno y la sustutuyan en el template. Esto podrá no parecer util pero en orquestacion es crucial para que los sistemas funcionen bien.
+
+Por lo general el comando ENTRYPOINT lo que indica a docker es como debe ejecutar el comando CMD, por defecto 
+este entrypoint es 
+
+```bash
+ENTRYPOINT ["/bin/bash","-c"] # Entrypoint por defecto
+```
+Que implica que se ejecutará en bash la linea de comandos y argumentos que se reciba en CMD.
+
+Sin embargo, podemos hacer modificaciones haciendo uso por ejemplo de ficheros de entrypoint.sh, por ejemplo:
+
+```bash
+#!/bin/sh
+set -eu # Si algun comando falla o hay variables sin defir el proceso falla
+# Genera el index.html final a partir de la plantilla
+envsubst < /var/www/html/index.html.template > /var/www/html/index.html
+# Toma el comando del CMD
+exec "$@"
+```
+
+De esta forma primero se ejecutará la sustitucion de variables de entorno que hace envsubst y luego exec $@ ejecutará lo que se haya recibido por el CMD que en este caso sería la instruccion
+
+```bash
+CMD ["apachectl","-D","FOREGROUND"]
+```
+
+Por utlimo definimos la plantilla que se va a usar. En este caso una [plantilla HTML](/imagenes/prueba_entrypoint/index.html.template) en la que esta indicado con:
+
+```bash
+${HOST_USER}
+```
+
+Donde y que variable de entorno debe sustiuirse para generar el fichero final.
+
+Un ejemplo de entrypoint que tambien es util es para añadir logs al contenedor que estamos ejecutando, por ejemplo
+
+```bash
+#!/bin/bash
+set -eu
+echo "Ejecutando comando en el CMD"
+echo "Ejecutado por: ${USER:-$(whoami)}"
+# Toma el comando del CMD
+exec "$@"
+```
+
+Para ver el log:
+
+```bash
+docker build -t imagen_ejemplo ./
+docker run -p 8080:80 --name contenedor_ejemplo -d imagen_ejemplo
+docker logs contenedor_ejemplo
+```
+
+Un ejemplo en el que se hace uso de todo esto es el siguiente:
+
+```bash
+FROM ubuntu:22.04
+
+ENV DEBIAN_FRONTEND=noninteractive
+
+RUN apt-get update
+RUN apt-get install -y --no-install-recommends nginx libcap2-bin ca-certificates
+RUN rm -rf /var/lib/apt/lists/*
+
+# Crear grupo y usuario
+RUN groupadd -r webgroup
+RUN useradd -m -s /usr/sbin/nologin -g webgroup webuser
+
+# Permitir que nginx pueda abrir puertos <1024
+RUN setcap 'cap_net_bind_service=+ep' /usr/sbin/nginx
+
+# Crear directorios necesarios
+RUN mkdir -p /var/lib/nginx/body
+RUN mkdir -p /var/lib/nginx/fastcgi
+RUN mkdir -p /var/lib/nginx/proxy
+RUN mkdir -p /var/lib/nginx/scgi
+RUN mkdir -p /var/lib/nginx/uwsgi
+RUN mkdir -p /var/log/nginx
+RUN mkdir -p /run/nginx
+RUN mkdir -p /run
+RUN touch /run/nginx.pid
+
+# Asignar grupo webgroup a los directorios y dar permisos 770
+RUN chgrp -R webgroup /var/lib/nginx /var/log/nginx /run
+RUN chmod -R 770 /var/lib/nginx /var/log/nginx /run
+
+COPY nginx.conf /etc/nginx/nginx.conf
+COPY site/ /var/www/site/
+RUN chown -R webuser:webgroup /var/www/site
+
+USER webuser
+EXPOSE 80
+CMD ["nginx", "-g", "daemon off;"]
+```
 
 
 
