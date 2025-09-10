@@ -359,7 +359,9 @@ EXPOSE 80
 CMD ["nginx", "-g", "daemon off"]
 ```
 
-Finalmente vamos a desplegar en contenedores una arquitectura simple de apache + php reforzado con TLS 
+Finalmente vamos a desplegar en contenedores una arquitectura simple de [apache + php reforzado con TLS](./php_and_apache/Dockerfile) 
+
+
 
 
 
