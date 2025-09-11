@@ -1,0 +1,7 @@
+/* Retoques ligeros sobre Bootstrap */
+body {
+  background-color: #f6f8fa;
+}
+.card {
+  border-radius: .75rem;
+}
