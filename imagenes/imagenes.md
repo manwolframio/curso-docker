@@ -362,6 +362,114 @@ CMD ["nginx", "-g", "daemon off"]
 Finalmente vamos a desplegar en contenedores una arquitectura simple de [apache + php reforzado con TLS](./php_and_apache/Dockerfile) 
 
 
+# Adicionales
+ 
+Desde hace algunas versiones de Docker existe un concepto denominado *multistage buiild* que nos permite generar imagenes más ligeras en base a generar distintos contenedores con los que desplegar finalmente la aplicacion final, quedando estos primeros solo para la etapa de construccion del contenedor. 
+
+Esto permite segmentar y trabajar comodamente con las dependencias ya que podemos instalar las dependencias de compilación mas pesadas en un contenedor inicial o contenedor constructor y cuando la aplicacion esté ya compilada podemos pasar solo los ejectuables y las dependencias de servicio al contenedor final. Permitiendo además salvaguardar los contenedores con el código fuente y exponer unicamente los binarios compilados por ejemplo.
+
+## Multistage build
+
+Para poder desarrolar contenedores basados en multistage hay que tener en cuenta como se van a segmentar y compartir los datos. Por ejemplo, supongamos que tenemos un código en C:
+
+ ```
+# include <stdlib.h>
+# include <stdio.h>
+
+int main(int argc, char** arvg){
+    printf("Hola mundo");
+}
+```
+
+El flujo con el que debemos trabajar es el siguiente:
+
+- Contenedor 1 (De construccion):
+    - Debe tener instaladas las librerias para compilar código C (gcc,etc.)
+    - Debe poder descargar dicho código de un repositorio si fuese necesario (git,etc.)
+    - Su salida será el binario compilado
+- Contenedor 2 (De ejejecucion):
+    - No es necesario que tenga la capacidad de compilar nada (Mas ligero)
+    - Debe poder ejecutar el binario que se le esta proporcionado
+    - Se le debe proporcionar el binario
+
+Para ilustrar el funcionamiento de esto se ha generado un dockerfile que realiza una compilacion de un servidor de echo basado en TCP que se ha programado en C. Este programa permite que el usuario se conecte por ejemplo empleando netcat de la siguiente forma:
+
+``` bash
+nc <ip del servidor> <puerto>
+
+    >> Hola
+    Hola
+    >> Hola mundo
+    Hola mundo
+```
+
+Para construir la imagen se estructuran dos contenedores, el primero de ellos que será el constructor o builder. Esto se indica con:
+
+``` bash
+From ubuntu:22.04 AS build
+```
+
+De esta forma cuando pasemos al segundo contenedor se podrá hacer referencia al primero de la siguiente forma:
+``` bash
+COPY --from=builder /app/echo_server .
+```
+
+La estructura de ficheros de nuestra aplicacion es la siguiente:
+
+``` bash 
+source/
+│
+├── src/
+│   ├── main.c
+│   ├── queue.c
+│   ├── server.c
+│   ├── client_handler.c
+│
+├── include/
+│   ├── queue.h
+│   ├── server.h
+│   ├── client_handler.h
+│
+└── Makefile
+
+```
+
+### En el primer contenedor (Constructor):
+---
+
+- Debe haber entonces lo siguiente:
+    - Un compilador de C (gcc) y Make para simplificar el proceso.
+    - El codigo fuente de nuestra aplicación.
+- Se debe realizar lo siguiente:
+    - Compilar y genearar el binario con el que se ejecutará la aplicación
+
+Resultando en el siguiente Dockerfile:
+```bash
+FROM ubuntu:22.04 AS builder
+ENV DEBIAN_FRONTEND=noninteractive
+RUN \
+    apt-get update && apt-get upgrade -y \
+    && apt-get install -y \
+    build-essential make \
+    && rm -rf /var/lib/apt/lists/*
+
+COPY ./source /app
+WORKDIR /app
+RUN make BIN=echo_server
+```
+
+### En el segudo contenedor (Ejecución):
+---
+
+- Debe haber entonces lo siguiente:
+    - El binario con permisos suficientes.
+- Se debe realizar lo siguiente:
+    - Ejecucion del binario
+
+Resultando en el siguiente Dockerfile:
+```bash
+
+
 
 
 

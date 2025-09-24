@@ -13,9 +13,7 @@ RUN apt-get update && apt-get upgrade -y && \
       openssl \
       git && \
     rm -rf /var/lib/apt/lists/*
-
-# Eliminamos los paquetes cacheados para aligerar la imagen
-
+    
 # Ajustamos el server name para que no de warnings apache
 RUN echo "ServerName DockerContainer" > /etc/apache2/conf-available/servername.conf && \
     a2enconf servername
