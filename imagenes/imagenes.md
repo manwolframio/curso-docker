@@ -86,8 +86,8 @@ Copia de ficheros del dokerhost al contenedor
 - CMD
 
 
-#### FROM
-
+### `FROM`
+---
 Clona una imagene de base sobre la que vamos a construir nuestro contenedor. Esta imagen puede ser bien un S.O el cual se virtualizará aprovechando el kernel del docker host (Virtualizacion ligera) o un contenedor que ya funcione sobre el cual queramos añadir una determinada funcionalidad
 
 ```bash
@@ -98,16 +98,16 @@ FROM nginx:latest
 ...
 ```
 
-#### RUN
-
+### `RUN`
+---
 Como ya sabemos permite instalar dependencias en las imagenes, son comandos que deben de tener un final y se deben usar sin interaccion del usuario, como:
 
 ```bash
 sudo apt-get <> -y # donde el -y permite que no se pida confirmacion al usuario de como se desea proceder
 ```
 
-#### COPY 
-
+### `COPY`
+---
 Traslada el directorio del host que se le especifique como primer argumento al destino que se le especifique como segundo argumento en el contenedor
 
 ```bash
@@ -133,12 +133,12 @@ RUN rm -rf /var/lib/apt/lists/*
 CMD ["apache2ctl", "-D", "FOREGROUND"]
 ```
 
-#### ADD
-
+### `ADD`
+---
 Funciona igual que COPY pero interpreta el fichero no solo como un directorio, si por ejemplo es un .tar lo descomprime, si es una URL lo descarga como haría wget
 
-#### ENV
-
+### `ENV`
+---
 Es una de las opciones más utiles por que permite establecer parámetros programables en el contenedor aunque la imagen sea inmutable, en el momento de construirse estos se interpretan y permiten fijar paramrtros como el hostname, secretos y claves, paramentros de configracion como URLs,...
 
 Un ejemplo simple:
@@ -161,8 +161,8 @@ Si construimos y ejecutamos la imagen
 >> docker run env_test:v0
 Juan
 ```
-### Workdir
-
+### `Workdir`
+---
 Esta instruccion fija el directorio desde el que se ejecutarán los comandos que se indiquen en el dockerfile. de forma que si lo modificamos y no tenemos en cuenta eso podemos descolocar directorios o perder el control de donde los ponemos, por defecto los contenedores trabajan en eldiretorio raiz del usuario root
 
 ejemplo de uso de workdir:
@@ -198,8 +198,8 @@ docker build -t ejemplo ./
 docker run ejemplo        
 >> Has usado bien workdir :)
 ```
-### Label
-
+### `Label`
+---
 Se trata de etiquetas que estan pensadas para dar metadara a la imagen. 
 
 ```bash
@@ -212,8 +212,8 @@ LABEL description="Imagen de ejemplo"
 CMD ["echo","Labels usados"]
 ```
 
-### User
-
+### `User`
+---
 User define quien ejecuta la tarea que indican los comandos inferiores, por ejemplo si creeamos un servicio que debe configurado por un usuario concreto. Adicionalmente el usuario debe exitir para que el comando funcione correctamente. Por defecto si no se pone nada el usuario es root.
 
 Un ejemplo usando el comando whoami que devuelve el usuario con el que se ejecuta:
@@ -258,7 +258,8 @@ Esta imagen intenta crear un archivo pero no le hemos dado permisos al nuevo usu
 prueba_user % docker run ejemplo        
 >> bin/bash: line 1: usuario.txt: Permission denied
 ```
-### Entrypoint
+### `Entrypoint`
+---
 Cuando el comando que se quiere ejecutar en docker requiere de lanzar varios procesos por ejemplo o de descargar cosas que varian con el tiempo como un repositorio con un conjunto de datos, como por ejemplo un modelo de AI de hugginface podemos ejecutarlos con un entrypoint o un punto de entrada a traves del cual podemos ejecutar una lista de comandos completa cada vez que se instancie un contenedor desde a la imagnen.
 
 Esto sigue la filosifía DevOps en la que el contenido/modelo/datos del contenedor se actualizan sin necesidad de reconstruir la imagen, haciendo que con un reinicio del contenedor sea suficiente.
@@ -457,7 +458,7 @@ COPY ./source /app
 WORKDIR /app
 RUN make BIN=echo_server
 ```
-
+Como nota la ejecucion del Make admite como parametro `BIN=[Nombre del binario de salida]`
 ### En el segudo contenedor (Ejecución):
 ---
 
@@ -468,7 +469,15 @@ RUN make BIN=echo_server
 
 Resultando en el siguiente Dockerfile:
 ```bash
+FROM ubuntu:22.04
+ENV DEBIAN_FRONTEND=noninteractive
 
+WORKDIR /app
+COPY --from=builder /app/echo_server .
+ENTRYPOINT ["./echo_server"]
+CMD ["--port", "8000"]
+```
+Como nota, el binario que hemos construido admite los parámetros `-p [puerto] o --port [puerto]` para indicar el puerto en el que se expone el servcio
 
 
 
