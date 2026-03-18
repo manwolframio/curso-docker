@@ -1,5 +1,11 @@
 # Curso de Docker
 
+## Índice
+- [Introducción](#introducción): qué es Docker, en qué se diferencia de una VM y cómo lanzar un contenedor básico.
+- [Arquitectura de Docker](#arquitectura-de-docker): qué componentes forman Docker y qué objetos puede gestionar.
+- [Imagenes](#imagenes): qué es una imagen, cómo se relaciona con un contenedor y por qué se construye por capas.
+- [Capas](#capas): cómo funcionan `FROM`, `RUN`, `CMD` y la capa de ejecución.
+
 ## Introducción
 Se trata de un sistema basado en imágenes para crear aplicaciones portables y cuyo ciclo de vida podemos controlar.
 

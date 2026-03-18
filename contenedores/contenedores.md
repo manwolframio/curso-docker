@@ -1,5 +1,13 @@
 # Contenedores
 
+## Índice
+- [Definición](#definición): qué es un contenedor y qué diferencias tiene respecto a otros recursos persistentes.
+- [Arranque, parada y reinicio](#arranque-parada-y-reinicio): cómo crear, detener, renombrar, reiniciar y eliminar contenedores.
+- [Variables de entorno](#variables-de-entorno): cómo definir y sobrescribir variables dentro del contenedor.
+- [Ejemplo 1: Contenedor MySQL desde cero](#ejemplo-1-contenedor-mysql-desde-cero): cómo levantar un servicio real y probarlo desde otro contenedor.
+- [Trasladar ficheros desde o hacia el contenedor](#trasladar-ficheros-desde-o-hacia-el-contenedor): cómo copiar archivos entre host y contenedor.
+- [Asignación de recursos en los contenedores](#asignación-de-recursos-en-los-contenedores): cómo limitar memoria y CPU.
+
 Una vez conocemos cómo crear imágenes, cómo se pueden construir, lo que son las capas y demás, es momento de pasar a operar con contenedores.
 
 ## Definición

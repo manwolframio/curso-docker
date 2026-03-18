@@ -1,5 +1,12 @@
 # Volúmenes
 
+## Índice
+- [Importancia de los volúmenes](#importancia-de-los-volúmenes): por qué el almacenamiento persistente es necesario y qué pasa si no se usa.
+- [Definir volúmenes de host](#definir-volúmenes-de-host): cómo montar una ruta del host dentro de un contenedor.
+- [Volúmenes anónimos](#volúmenes-anónimos): cómo funcionan los volúmenes sin nombre y cuándo usarlos con cautela.
+- [Instrucción de volúmenes en el Dockerfile](#instrucción-de-volúmenes-en-el-dockerfile): cómo declarar un volumen desde la imagen.
+- [Volúmenes con nombre](#volúmenes-con-nombre): cómo crear, reutilizar y compartir volúmenes entre contenedores.
+
 En este apartado se aprenderá a manejar los distintos tipos de objetos que permiten mantener almacenamiento persistente.
 
 Existen tres tipos de volúmenes en Docker:
@@ -227,7 +234,6 @@ binlog.000001   client-cert.pem   ibtmp1                  performance_schema   s
 ```
 
 Efectivamente, hemos podido montar el mismo volumen en este nuevo contenedor y hemos visto que los archivos del contenedor con MySQL están en él.
-
 
 
 

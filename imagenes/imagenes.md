@@ -1,4 +1,11 @@
 # Curso de Docker
+
+## Índice
+- [Imágenes](#imágenes): qué repositorios se usan, cómo se identifican las imágenes y cómo descargarlas.
+- [Imagen de ejemplo](#imagen-de-ejemplo): cómo construir una imagen sencilla de Apache y PHP.
+- [Comandos de interés](#comandos-de-interés): qué comandos básicos se usan para trabajar con imágenes y contenedores.
+- [Comandos que admite un Dockerfile](#comandos-que-admite-un-dockerfile): qué hace cada instrucción principal de un Dockerfile.
+
 ## Imágenes
 
 Por lo general, cuando se construye una imagen, la que sea, se parte de una imagen base, esto en la capa FROM. Para poder escoger entre unas u otras podemos acudir a distintos repositorios de imágenes ya construidas, como:
@@ -478,7 +485,6 @@ ENTRYPOINT ["./echo_server"]
 CMD ["--port", "8000"]
 ```
 Como nota, el binario que hemos construido admite los parámetros `-p [puerto] o --port [puerto]` para indicar el puerto en el que se expone el servcio
-
 
 
 

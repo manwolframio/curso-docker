@@ -1,5 +1,11 @@
 # Redes en Docker
 
+## Índice
+- [Redes por defecto](#redes-basicas): qué redes crea Docker al instalarse y cómo inspeccionarlas.
+- [Cómo crear una red](#cómo-crear-una-red): cómo definir redes bridge con direccionamiento automático o manual.
+- [Cómo conectar contenedores a redes](#cómo-conectar-contenedores-a-redes): cómo unir contenedores a una o varias redes para que puedan comunicarse.
+
+## Redes basicas
 Partiendo del punto más básico, cuando instalamos Docker, este mismo proceso nos crea tres redes.
 
 - Un network bridge y una interfaz llamada ```docker0```. A este bridge será al que se conecten tanto el host como los distintos contenedores que despleguemos, siempre que no estemos definiendo una red propia.
@@ -298,4 +304,3 @@ Tanto para eliminar redes como para eliminar volumenes y en general
 ```bash
 docker network rm red_1
 ```
-
