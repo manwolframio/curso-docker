@@ -256,5 +256,46 @@ PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
 64 bytes from 10.0.0.2: icmp_seq=3 ttl=64 time=0.104 ms
 64 bytes from 10.0.0.2: icmp_seq=4 ttl=64 time=0.102 ms
 ```
+# Desconectar contenedores de una red
 
+Este comando es análogo al caso anterior, en el que se asociaba a un contenedor una red previamente definida. Para ello se utiliza el siguiente comando:
+
+```bash
+docker network disconnect <red> <contenedor>
+```
+
+Siguiendo con el ejemplo de antes, vamos ahora a desconectar el contenedor 2 de la red 1 para ver si pierde la conectividad:
+
+```bash
+# Quitamos el contenedor
+docker network disconnect red_1 contenedor_red_2
+
+# Vemos si se ha quitado correctamente
+docker network inspect red_1
+"Containers": {
+            "0d8480b3a47de9b4effb5ce63abd2cbf152b567c088f1aa35f434da047f768e8": {
+                "Name": "contenedor_red_1",
+                "EndpointID": "4a839777a97949204059ea595351610cba9ec2a0e0424cf2d8cd1b26f4b9d9fd",
+                "MacAddress": "9a:43:4b:97:b4:e9",
+                "IPv4Address": "10.0.0.2/24",
+                "IPv6Address": ""
+            }
+        }
+
+# Probamos con ping
+docker exec -it contenedor_red_2 ping 10.0.0.2 -c 4
+PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
+
+--- 10.0.0.2 ping statistics ---
+4 packets transmitted, 0 received, 100% packet loss, time 3075ms
+```
+
+
+# Eliminar redes
+
+Tanto para eliminar redes como para eliminar volumenes y en general 
+
+```bash
+docker network rm red_1
+```
 
