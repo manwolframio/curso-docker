@@ -1,11 +1,11 @@
 # Contenedores
 
-Una vez conocemos como crear imagenes, como se pueden construir, lo que son las capas y demás. Es momento de pasar a operar con contenedores.
+Una vez conocemos cómo crear imágenes, cómo se pueden construir, lo que son las capas y demás, es momento de pasar a operar con contenedores.
 
-## Definicion
-Por norma un contenedor es una instancia de una imagen previamente definida y aunque puede asociarte con otros recursos como redes y volumenes que pueden si ser permanentes, es de por si un objeto de solo lectura, por lo que todas las modificaciones que se realicen sobre un contedor desaparecerán una vez se detenga dicho contenedor, salvo aquellos cambios asociados a recursos como volúmenes.
+## Definición
+Por norma, un contenedor es una instancia de una imagen previamente definida y, aunque puede asociarse con otros recursos como redes y volúmenes que pueden sí ser permanentes, es de por sí un objeto de solo lectura, por lo que todas las modificaciones que se realicen sobre un contenedor desaparecerán una vez se detenga dicho contenedor, salvo aquellos cambios asociados a recursos como volúmenes.
 
-Para saber que contenedores existe en un determinado equipo de puede ejecutar el comando:
+Para saber qué contenedores existen en un determinado equipo se puede ejecutar el comando:
 ```bash
 docker ps
 ```
@@ -33,14 +33,14 @@ Para ejecutarlo en segundo plano añadimos ```-d``` :
 docker run -d jenkins/jenkins:latest 
 ```
 
-Para ejecutarlo en primer plano y terminar el contenedor cuando se finalice (crtl+c)
+Para ejecutarlo en primer plano y terminar el contenedor cuando se finalice (`Ctrl+C`)
 
 ```bash
 docker run -rm -ti jenkins/jenkins:latest 
 ```
 
 
-Una vez está en ejecucion podemos consultar su estado de la siguiente forma:
+Una vez está en ejecución podemos consultar su estado de la siguiente forma:
 
 ```bash
 docker ps
@@ -69,7 +69,7 @@ CONTAINER ID   IMAGE                    COMMAND                  CREATED        
 ```
 Donde ya se le asigna correctamente el nombre al contenedor. 
 
-No obstante, durante todo este tiempo no se ha podido acceder al jenkins que estamos desplegando, ya que, es necesario llevar acabo el port mapping, es decir. Debemos decirle al docker daemon que puerto de nuestro host va a estar mapeado a que puerto dde dicho contenedor.
+No obstante, durante todo este tiempo no se ha podido acceder al Jenkins que estamos desplegando, ya que es necesario llevar a cabo el port mapping, es decir, debemos decirle al Docker daemon qué puerto de nuestro host va a estar mapeado a qué puerto de dicho contenedor.
 
 En este caso, y en general en el de todos los servicios web, el puerto suele ser el 80, no el caso de jenkins que es 8080, por lo que redirigremos el puerto 8080 del host al puerto 8080 del contenedor, para ello se debe añadir al comando de ejecución el comando ```-p <puerto del host : puerto interno del contenedor>```
 
@@ -78,7 +78,7 @@ Para ello ejecutamos el siguiente comando:
 docker run -d --name "jenkins_main" -p 8080:8080 jenkins/jenkins:latest
 ```
 
-En el caso de jenkins, despues de hacer esto, la interfaz web nos pide una contraseña y nos indica en que parte del contenedor está. En este caso: ```/var/jenkins_home/secrets/initialAdminPassword```. Sin embargo, esta parte del contenedor, como se comentaba no es accesble desde el propio equipo de momento, ya que aún ni siquiera hemos montado un volumen compartido, por lo que deberemos acceder al contenedor. Para ello la forma más comun es mediante el comando ```docker exec <contenedor> <comando>``` que permite ejecutar distintas instrucciones en el contenedor. En este caso, como lo que quieremos es poder acceder a dicho directorio, podemos proceder de dos formas. 
+En el caso de Jenkins, después de hacer esto, la interfaz web nos pide una contraseña y nos indica en qué parte del contenedor está. En este caso: ```/var/jenkins_home/secrets/initialAdminPassword```. Sin embargo, esta parte del contenedor, como se comentaba, no es accesible desde el propio equipo de momento, ya que aún ni siquiera hemos montado un volumen compartido, por lo que deberemos acceder al contenedor. Para ello, la forma más común es mediante el comando ```docker exec <contenedor> <comando>```, que permite ejecutar distintas instrucciones en el contenedor. En este caso, como lo que queremos es poder acceder a dicho directorio, podemos proceder de dos formas.
 
 1) Ejecutando el comando directamente
 
@@ -87,7 +87,7 @@ En el caso de jenkins, despues de hacer esto, la interfaz web nos pide una contr
 docker ps
 # Con dicho nombre ejecutamos el comando
 docker exec jenkins_main cat /var/jenkins_home/secrets/initialAdminPassword 
-<pasword>
+<password>
 ```
 
 2) Explorando el contenedor de forma interactiva, para lo que ejecutaremos bash, pero debemos hacerlo en modo interactivo para que podamos usarlo, para lo que añadiremos las opciones ```-it```:
@@ -100,7 +100,7 @@ docker exec -it jenkins_main /bin/bash
 # Ya dentro del contenedor:
 jenkins@71ef9193ff52:/$ cd /var/jenkins_home/secrets/
 jenkins@71ef9193ff52:~/secrets$ cat initialAdminPassword
-<pasword>
+<password>
 ```
 
 # Arranque, parada y reinicio
@@ -111,7 +111,7 @@ Una vez ya tenemos las instancias definidas y en ejecución, habiendo usado el c
 docker run 
 ```
 
-Tambíen es posible manejar el estado de esos contenedores, pudiendo detenerlos, renombrarlos, arrancarlos o reiniciarlos.
+También es posible manejar el estado de esos contenedores, pudiendo detenerlos, renombrarlos, arrancarlos o reiniciarlos.
 
 - Detener un contenedor:
 
@@ -136,7 +136,7 @@ docker rename <nombre> <nuevo nombre>
 ```bash
 docker restart <nombre>
 ```
-Finalmente, si lo que se quiere es eliminar por completo el contenedor, aunque esté en ejecucion se puede usar el comando:
+Finalmente, si lo que se quiere es eliminar por completo el contenedor, aunque esté en ejecución, se puede usar el comando:
 
 ```bash
 docker rm -f <nombre>
@@ -184,7 +184,7 @@ docker logs contenedor_prueba
 UBUNTU2204
 ```
 
-Una segunda opcion para generar variables de entorno es emplear la opcion ```-e```, con la que podemos definir y sobreescribir valores de variables de entorno.
+Una segunda opción para generar variables de entorno es emplear la opción ```-e```, con la que podemos definir y sobreescribir valores de variables de entorno.
 
 Como ejemplo, si ahora ejecutamos la misma imagen sobreescribiendo este valor:
 
@@ -200,16 +200,16 @@ docker logs contenedor_prueba
 UBUNTU
 ```
 
-## Ejemplo 1: Contenedor MYSQL desde cero
+## Ejemplo 1: Contenedor MySQL desde cero
 
-En este primer ejemplo de practica con imagenes vamos a crear un contenedor con MYSQL, con la imagen oficial y veremos que requisitos se plantean para crear instancias y como crear imagenes definitivas con dicha conforguracion.
+En este primer ejemplo de práctica con imágenes vamos a crear un contenedor con MySQL, con la imagen oficial, y veremos qué requisitos se plantean para crear instancias y cómo crear imágenes definitivas con dicha configuración.
 
 En el caso de mysql, en la documentación oficial https://hub.docker.com/_/mysql nos dicen que debemos usar el siguiente comando:
 ```bash
 $ docker run --name some-mysql -e MYSQL_ROOT_PASSWORD=my-secret-pw -d mysql:tag
 ```
 
-Si lo analizamos brevemente, veremos que lo que se esta haciendo en realidad es deifnir una variable de entorno ```MYSQL_ROOT_PASSWORD=my-secret-pw```, un nombre de imagen ```some-mysql``` y la propia imagen ```mysql:tag```. Esto mismo en realidad se puede traducir en un dockerfile que sea: 
+Si lo analizamos brevemente, veremos que lo que se está haciendo en realidad es definir una variable de entorno ```MYSQL_ROOT_PASSWORD=my-secret-pw```, un nombre de imagen ```some-mysql``` y la propia imagen ```mysql:tag```. Esto mismo en realidad se puede traducir en un Dockerfile que sea:
 
 ```bash
 FROM mysql:9.0
@@ -224,7 +224,7 @@ El problema de hacer esto es que la contraseña se queda escrita en el fichero, 
 
 Un aspecto interesante de esto es que no lleva ```RUN```. Esto se debe a que ya dispone de un entrypoint interno que ejecuta la BBDDD en primer plano (recordando con esto que en un contenedor, cuando el PID 0 finaliza se da por finalizado el contenedor).
 
-Partiendo de esa imagen, la costruimos, ejecutamos y vemos su estado:
+Partiendo de esa imagen, la construimos, ejecutamos y vemos su estado:
 ```bash
 # Construccion:
 docker build -t mysql_con_env:v0 .
@@ -239,7 +239,7 @@ CONTAINER ID   IMAGE              COMMAND                  CREATED         STATU
 49ae06573901   mysql_con_env:v0   "docker-entrypoint.s…"   6 seconds ago   Up 6 seconds   0.0.0.0:3306->3306/tcp, [::]:3306->3306/tcp   mysql_instance
 ```
 
-Antes de proseguir, vamos a crear un segundo contenedor para que la BBDD que estamos generando pueda ser probada, para lo cual necesitamos un cliente mysql. Por lo que vamos a crear una cli portatil, es decir, un contenedor que contenga este programa y que además no tenga CMD, es decir, que el PID 0 se debe proporcionar como comando al ejecutar la imagen.
+Antes de proseguir, vamos a crear un segundo contenedor para que la BBDD que estamos generando pueda ser probada, para lo cual necesitamos un cliente MySQL. Por lo que vamos a crear una CLI portátil, es decir, un contenedor que contenga este programa y que además no tenga CMD, es decir, que el PID 0 se debe proporcionar como comando al ejecutar la imagen.
 ```bash
 FROM ubuntu:22.04
 
@@ -268,7 +268,7 @@ Otro aspecto relevante de los contenedores es que podemos analizar el consumo de
 
 ## Trasladar ficheros desde o hacia el contenedor
 
-El comando en si es ```docker cp``` y funciona de forma similar a comandos como scp o ftp, indicando el origen y el destino de la siguiente forma:
+El comando en sí es ```docker cp``` y funciona de forma similar a comandos como scp o ftp, indicando el origen y el destino de la siguiente forma:
 
 - Si es un contenedor: <nombre contenedor>:<dir al fichero>
 - Si es el host: /<dir al fichero>
@@ -280,7 +280,7 @@ docker cp apache:/index.html /home/user/escritorio/
 Caso en el que estaríamos copiando el index de la web de un servidor apache al escritorio del host.
 
 
-## Asignacion de recursos en los contenedores
+## Asignación de recursos en los contenedores
 
 Cuando ejecutamos contenedores es posible limitar el consumo de los contenedores al ejecutarlos.
 
@@ -295,7 +295,7 @@ Por ejemplo, en el caso del contenedor de mysql:
 docker run --name "mysql_instance" -p 3306:3306  -d -m "5 gb" mysql_con_env:v0
 ```
 
-Cuando comprobamos ahora el conusmo de dicho contenedor, ya no se calcula sobre la máxima capacidad del equipo sino sobre el máximo de memoria asignada: 
+Cuando comprobamos ahora el consumo de dicho contenedor, ya no se calcula sobre la máxima capacidad del equipo sino sobre el máximo de memoria asignada:
 ```bash
 docker stats
 # Como se observa el limit es 5 GiB, asignados antes
@@ -303,7 +303,7 @@ docker stats
 f85abf033264   mysql_instance   14.00%    11.7MiB / 5GiB      0.23%     1.17kB / 126B   36.9MB / 264MB   1
 ```
 
-El resto de posibles limites que podemos imponer sobre un contenedor son los siguientes:
+El resto de posibles límites que podemos imponer sobre un contenedor son los siguientes:
 
 ```bash
       --cpuset-mems string               MEMs in which to allow execution (0-3, 0,1)
@@ -314,7 +314,7 @@ El resto de posibles limites que podemos imponer sobre un contenedor son los sig
       --memory-swappiness int            Tune container memory swappiness (0 to 100) (default -1)
 ```
 
-Para el caso de la CPU es proceso es similar, exisitiendo las siguientes limitaciones:
+Para el caso de la CPU el proceso es similar, existiendo las siguientes limitaciones:
 
 ```bash
       --cpu-period int                   Limit CPU CFS (Completely Fair Scheduler) period

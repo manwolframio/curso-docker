@@ -1,9 +1,9 @@
 # Curso de Docker
 
-## Introduccion
-Se trata de un sistema basado en imagenes para crear aplicaciones portables y cuyo ciclo de vida podemos controlar
+## Introducción
+Se trata de un sistema basado en imágenes para crear aplicaciones portables y cuyo ciclo de vida podemos controlar.
 
-Se basan el la virtualziacion ligera, es decir, el contenedor va a constituir una micro máquina virtual que en vez de requerir de todos los componentes clasicos de una VM pasa a compartirlos con el host donde se ejecute. 
+Se basa en la virtualización ligera, es decir, el contenedor va a constituir una micro máquina virtual que, en vez de requerir todos los componentes clásicos de una VM, pasa a compartirlos con el host donde se ejecute.
 
 **VM**:
 - VDISK
@@ -11,7 +11,7 @@ Se basan el la virtualziacion ligera, es decir, el contenedor va a constituir un
 - Sistema operativo completo (>1 GB)
 
 **Contenedor**:
-- Comaprte disco, cpu y kernel con el host
+- Comparte disco, CPU y kernel con el host
 - Sistemas operativos de < 100 MB
 - Portables
 
@@ -19,10 +19,10 @@ Ejemplo de lanzamiento de un contenedor de ejemplo:
 
 ```bash
 docker run -p 8080:80 httpd
-````
+```
 Este ejecuta en un contenedor una imagen del servidor web de apache (Como se ejecuta en primer plano debemos detenerlo con control + c)
 
-Si se quisiera ejecutar en foregroudn o segundo plano:
+Si se quisiera ejecutar en foreground o segundo plano:
 
 ``` bash
 docker run -p <puerto externo>:<puerto del contenedor> -d [imagen]
@@ -31,29 +31,29 @@ Para borrarlo se debe usar
 ```bash
 docker ps # Para ver el nombre del contenedor
 docker stop [nombre del contenedor] 
-````
+```
 
-### Descripcion de docker:
+### Descripción de Docker:
 
-Es un sistema que permite ejecutar aplicaciones de "bolsillo", es decir, partiendo del sistema operativo del host se montan sobre el sistemas con unas librerías fijas, requisistos, proceso de insalacion, etc. es decir que se puede correr un mini sistema dentro del host que se genera siempre de igual forma y que ejecuta uno o varios servicios a partir de los cuales se constrye una aplicacion (Microservicios). Esta centrado en la portabilidad, el control del ciclo de vida y la eficiencia.
+Es un sistema que permite ejecutar aplicaciones de "bolsillo", es decir, partiendo del sistema operativo del host se montan sobre el sistema con unas librerías fijas, requisitos, proceso de instalación, etc. Es decir, se puede correr un mini sistema dentro del host que se genera siempre de igual forma y que ejecuta uno o varios servicios a partir de los cuales se construye una aplicación (microservicios). Está centrado en la portabilidad, el control del ciclo de vida y la eficiencia.
 
-  ## Arquitectura de docker
+## Arquitectura de Docker
 
-  - Docker host: Es el equipo fisico o virtual donde se ejecuta docker. Este esta compuesto a su vez de:
+- Docker host: Es el equipo físico o virtual donde se ejecuta Docker. Este está compuesto a su vez de:
 
 
-  - Docker daemon Servicio del sistema que eejcuta los contenedores
+- Docker daemon: Servicio del sistema que ejecuta los contenedores.
 
-  - Docker rest api: Comunica el docker CLI en el que ejecutaremos los comandos que lanzaran las instancias con el daemon a traves de un sistema rest.
+- Docker REST API: Comunica el Docker CLI, en el que ejecutaremos los comandos que lanzarán las instancias, con el daemon a través de un sistema REST.
 
-  - Docker CLI: interfaz para ejecutar comandos docker
+- Docker CLI: Interfaz para ejecutar comandos Docker.
 
-  Que puede generar docker:
+Qué puede generar Docker:
 
-  Contenedores
-  Imagenes
-  Volumenes
-  Redes y namespaces
+Contenedores
+Imágenes
+Volúmenes
+Redes y namespaces
 
 # Imagenes
 
@@ -79,9 +79,9 @@ La relación entre imagen y contenedor es la misma que la de un plano arquitect�
 ## Capas
 
 ### Capa de imagen base
-Para construir una imagen basica se incia indicando el S.O o la imaen de base a partir de la cual se comienza a construir. Para ello se recurre a la instruccion FROM
+Para construir una imagen básica se inicia indicando el S. O. o la imagen de base a partir de la cual se comienza a construir. Para ello se recurre a la instrucción FROM.
 
-por ejemplo ubuntu indica:
+Por ejemplo, Ubuntu indica:
 
 https://hub.docker.com/_/ubuntu 
 
@@ -89,7 +89,7 @@ https://hub.docker.com/_/ubuntu
 FROM ubuntu:22.04
 ```
 
-La propia ubuntu recomienda que si se usa se empiece de la siguiente forma
+La propia Ubuntu recomienda que, si se usa, se empiece de la siguiente forma:
 
 ``` bash
 RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
@@ -99,48 +99,47 @@ ENV LANG en_US.utf8
 
 ### Capa 2 o capa RUN
 
-En la que se indica los comandos con los que se instalan las dependencias y programas necesarios para correr la aplicación que se quiere montar. 
+En la que se indican los comandos con los que se instalan las dependencias y programas necesarios para correr la aplicación que se quiere montar.
 
-No esta pensado para que sean comandos de ejecucion permanetente si no de instalacion, gestión de permisos, cambio y generacion de directorios ... Los comandos que se ejecuten con RUN se ejecutarán una sola vez durante la construccion de la imagen de Docker.
+No está pensado para que sean comandos de ejecución permanente, sino de instalación, gestión de permisos, cambio y generación de directorios... Los comandos que se ejecuten con RUN se ejecutarán una sola vez durante la construcción de la imagen de Docker.
 
 En el caso de la imagen de antes añadimos:
 
 ```bash
 RUN apt-get install apache2 -y
 ```
-En este caso nuestra aplicacion solo tiene una dependencia que es apache propiamente por que solo estamos instalando ese serivicio. En caso de necesitar ficheros presentes en el docker host se puede hacer uso bien de git
+En este caso nuestra aplicación solo tiene una dependencia, que es Apache propiamente, porque solo estamos instalando ese servicio. En caso de necesitar ficheros presentes en el Docker host se puede hacer uso bien de Git
 
 ``` bash
-RUN apt-get install git -y && git clone <el nobre del repo>
+RUN apt-get install git -y && git clone <el nombre del repo>
 ```
 
-o bien de copiar directamente del docker host
+o bien de copiar directamente del Docker host
 
 ```bash
 COPY <origen en el docher host> <Destino en el contenedor>
-````
+```
 
-Adicionalmente hay mas comandos para esta capa como workdir o users que permitiran otras funcionalidades pero para crear una imagen básica estos son suficientes
+Adicionalmente hay más comandos para esta capa, como workdir o users, que permitirán otras funcionalidades, pero para crear una imagen básica estos son suficientes.
 ### Capa 3 o capa CMD
 
 ```bash
 CMD ["apachectl","-D","FOREFROUND"]
 ```
-Este sera el programa ejecutado en primer plano. el PID de este proceso será el que defina la vida del contenedor. Si el proceso finaliza el contenedor se detiene.
+Este será el programa ejecutado en primer plano. El PID de este proceso será el que defina la vida del contenedor. Si el proceso finaliza, el contenedor se detiene.
 
 ### Capa 4 o capa de ejecucion
 
-Como se ha comentado la imagen que se construye en docker es un inmutable no un sistema en ejecucion. tras construir el contenedor apartir del dockerfle este se debe 'arrancar' con el comando docker run.
+Como se ha comentado, la imagen que se construye en Docker es un inmutable, no un sistema en ejecución. Tras construir el contenedor a partir del Dockerfile, este se debe "arrancar" con el comando docker run.
 
-Con el contenedor corriendo podemos ver los logs, el estado, el tiempo de ejecucion...
+Con el contenedor corriendo podemos ver los logs, el estado, el tiempo de ejecución...
 
-Esta última es la capa de escritura y es a priori temporal, es decir no modifica la imagen y cuando el contenedor se detiene todo lo modificado se elimina. se dice que es temporal pero se pueden construir volumnenes y configuraciones almacenables que sean prsistentes aunque nunca cambiarán la imagen.
+Esta última es la capa de escritura y es a priori temporal, es decir, no modifica la imagen y, cuando el contenedor se detiene, todo lo modificado se elimina. Se dice que es temporal, pero se pueden construir volúmenes y configuraciones almacenables que sean persistentes, aunque nunca cambiarán la imagen.
 
 ```bash
     docker run --name <nombre del contendor> -p <puerto del host>:<puerto del contenedor> [-d] [nombre de la imagen]
 ```
 
-Como se ha comentado con docker se pueden construir volumenes para generar datos persistentes o redes para administrar los puntos de entrada, generar sistemas mas complejos e introducir orquestadores.
+Como se ha comentado, con Docker se pueden construir volúmenes para generar datos persistentes o redes para administrar los puntos de entrada, generar sistemas más complejos e introducir orquestadores.
 
 [Ejemplo de imagen apache](./Dockerfile)
-

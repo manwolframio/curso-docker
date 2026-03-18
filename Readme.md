@@ -2,14 +2,14 @@
 
 - Autor: Nicolás Manso
 - GH: [manwolframio](https://github.com/manwolframio)
-- Linkedln [Nicolas Manso](https://linkedin.com/in/nmanso/)
+- LinkedIn [Nicolás Manso](https://linkedin.com/in/nmanso/)
 
-A lo largo de este repositorio se pone a disposicion la documentacion y ejemplos sobre el uso de la herramienta Docker, así como del uso de los repositorios Docker hub y Github container registry
+A lo largo de este repositorio se pone a disposición la documentación y ejemplos sobre el uso de la herramienta Docker, así como del uso de los repositorios Docker Hub y GitHub Container Registry.
 
 Autor: Nicolás Manso
 
 ## Contenido:
-- [Introduccion](./introduccion/intro.md)
-- [Imagenes](./imagenes/imagenes.md)
+- [Introducción](./introduccion/intro.md)
+- [Imágenes](./imagenes/imagenes.md)
 - [Contenedores](./contenedores/contenedores.md)
 - [Volúmenes](./volumenes/volumenes.md)

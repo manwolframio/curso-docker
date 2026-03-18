@@ -1,22 +1,22 @@
-# Curso de docker
+# Curso de Docker
 ## Imágenes
 
-Por lo general cuando se construye una imagen, la que sea se parte de una imagen base, esto en la capa FROM. para poder escoger entre unas u otras podemos acudir a distintos repositorios de imagenes ya construidas como 
+Por lo general, cuando se construye una imagen, la que sea, se parte de una imagen base, esto en la capa FROM. Para poder escoger entre unas u otras podemos acudir a distintos repositorios de imágenes ya construidas, como:
 - [Docker hub](https://hub.docker.com/)
-- [Github Containter Registry](https://docs.github.com/es/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
+- [GitHub Container Registry](https://docs.github.com/es/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
 
-Para hacer uso de ellos en el FROM se debe indicar el origen de la imagen, por ejemplo si lo que queremos es desplegar un mongodb de docker hub
+Para hacer uso de ellos en el FROM se debe indicar el origen de la imagen. Por ejemplo, si lo que queremos es desplegar un MongoDB de Docker Hub:
 ```bash
 docker pull mongo:8.0.13-noble # De esta forma lo descargamos
 
 docker run -p 27017:27017 -d mongo:8.0.13-noble # De esta forma lo ejecutamos
-````
+```
 
-El nombre de los contenedores se formatea en tags, que tienen la siguiente estructura
+El nombre de los contenedores se formatea en tags, que tienen la siguiente estructura:
 ```bash
 <repositorio de origen>/<autor>/nombre_imagen:version
 ```
-Al descargarlo podemos ver que harña varios pulls. Si descargamos verisones similares de la mimsa imagen solo se hará pull de las layers que sean diferentes, el resto se notificarán como alredy exist, o is up to date si no cambia nada. por ejemplo
+Al descargarlo podemos ver que hará varios pulls. Si descargamos versiones similares de la misma imagen solo se hará pull de las layers que sean diferentes; el resto se notificarán como already exist, o is up to date si no cambia nada. Por ejemplo:
 ```bash
 docker pull mongo:latest
 ```
@@ -24,12 +24,12 @@ docker pull mongo:latest
 ```bash 
 docker pull mongo:3.0.18.noble
 ```
-Aunque es la misma imagen tiene distinta etiqueta por lo que se conserva la informacion de todas las capas
+Aunque es la misma imagen, tiene distinta etiqueta, por lo que se conserva la información de todas las capas.
 
-Siempre es buena practica consultar las imagenes disponibles en el repositorio original (docer hub, maven,...) para poder hacer un uso correcto de ellas
+Siempre es buena práctica consultar las imágenes disponibles en el repositorio original (Docker Hub, Maven,...) para poder hacer un uso correcto de ellas.
 
 #### Imagen de ejemplo
-Vamos a construir rapidamente una imagen de apache y php en ubuntu 22 como ejemplo.
+Vamos a construir rápidamente una imagen de Apache y PHP en Ubuntu 22 como ejemplo.
 
 ```bash
 # version inicial de la imagen de apache y php [V0]
@@ -43,9 +43,9 @@ RUN echo "ServerName localhost" >> /etc/apache2/apache2.conf
 RUN rm -rf /var/lib/apt/lists/*
 
 CMD ["apache2ctl", "-D", "FOREGROUND"]
-````
+```
 
-En este caso l aimagen corre el proceso en foreground que es es como debe hacerse pero aun no tiene php en ella. 
+En este caso la imagen corre el proceso en foreground, que es como debe hacerse, pero aún no tiene PHP en ella.
 
 Primero construimos la imagen:
 
@@ -58,16 +58,16 @@ y la ejecutamos:
 docker run --name phpApache -d php_and_apache:v0
 ```
 
-## Comandos de interes:
+## Comandos de interés:
 
 ```bash
-docker ps # Para ver los contenedored que hay vivos
+docker ps # Para ver los contenedores que hay vivos
 docker ps -a # Para ver todos los contenedores
 docker stop <nombre del contenedor> # Detiene el contenedor, borrando todo lo que no esté en almacenamiento persistente
-docker rm <nombre del contenedor> # Borra el contenedor pero debe haber sido detendido previamente
+docker rm <nombre del contenedor> # Borra el contenedor pero debe haber sido detenido previamente
 docker rm <nomre del contenedor> --force # Borra el contenedor aunque esté corriendo
 ```
-<span style="color:red">Siempre que se modifique algo en el Dokerfile se debe recostuir la imagen</span>
+<span style="color:red">Siempre que se modifique algo en el Dockerfile se debe reconstruir la imagen</span>
 
 ### Comandos que admite un Dockerfile
 
@@ -88,7 +88,7 @@ Copia de ficheros del dokerhost al contenedor
 
 ### `FROM`
 ---
-Clona una imagene de base sobre la que vamos a construir nuestro contenedor. Esta imagen puede ser bien un S.O el cual se virtualizará aprovechando el kernel del docker host (Virtualizacion ligera) o un contenedor que ya funcione sobre el cual queramos añadir una determinada funcionalidad
+Clona una imagen de base sobre la que vamos a construir nuestro contenedor. Esta imagen puede ser bien un S. O., el cual se virtualizará aprovechando el kernel del Docker host (virtualización ligera), o un contenedor que ya funcione sobre el cual queramos añadir una determinada funcionalidad.
 
 ```bash
 FROM ubuntu:22.04
@@ -100,15 +100,15 @@ FROM nginx:latest
 
 ### `RUN`
 ---
-Como ya sabemos permite instalar dependencias en las imagenes, son comandos que deben de tener un final y se deben usar sin interaccion del usuario, como:
+Como ya sabemos, permite instalar dependencias en las imágenes. Son comandos que deben tener un final y se deben usar sin interacción del usuario, como:
 
 ```bash
-sudo apt-get <> -y # donde el -y permite que no se pida confirmacion al usuario de como se desea proceder
+sudo apt-get <> -y # donde el -y permite que no se pida confirmación al usuario de cómo se desea proceder
 ```
 
 ### `COPY`
 ---
-Traslada el directorio del host que se le especifique como primer argumento al destino que se le especifique como segundo argumento en el contenedor
+Traslada el directorio del host que se le especifique como primer argumento al destino que se le especifique como segundo argumento en el contenedor.
 
 ```bash
 COPY <origen> <destino>
@@ -139,7 +139,7 @@ Funciona igual que COPY pero interpreta el fichero no solo como un directorio, s
 
 ### `ENV`
 ---
-Es una de las opciones más utiles por que permite establecer parámetros programables en el contenedor aunque la imagen sea inmutable, en el momento de construirse estos se interpretan y permiten fijar paramrtros como el hostname, secretos y claves, paramentros de configracion como URLs,...
+Es una de las opciones más útiles porque permite establecer parámetros programables en el contenedor aunque la imagen sea inmutable. En el momento de construirse, estos se interpretan y permiten fijar parámetros como el hostname, secretos y claves, parámetros de configuración como URLs,...
 
 Un ejemplo simple:
 
@@ -163,7 +163,7 @@ Juan
 ```
 ### `Workdir`
 ---
-Esta instruccion fija el directorio desde el que se ejecutarán los comandos que se indiquen en el dockerfile. de forma que si lo modificamos y no tenemos en cuenta eso podemos descolocar directorios o perder el control de donde los ponemos, por defecto los contenedores trabajan en eldiretorio raiz del usuario root
+Esta instrucción fija el directorio desde el que se ejecutarán los comandos que se indiquen en el Dockerfile, de forma que si lo modificamos y no tenemos en cuenta eso podemos descolocar directorios o perder el control de dónde los ponemos. Por defecto, los contenedores trabajan en el directorio raíz del usuario root.
 
 ejemplo de uso de workdir:
 
@@ -183,7 +183,7 @@ COPY ejemplo_python/ejemplo_python.py /ejemplo_python.py
 CMD ["python3","ejemplo_python.py"]
 ```
 
-En esta imagen, si no usamos workdir el directorio no se cambia y se ejecutará el codigo de python del segundo copy y no se leera el fichero por lo cual nos avisará de que no existe.
+En esta imagen, si no usamos workdir el directorio no se cambia y se ejecutará el código de Python del segundo copy y no se leerá el fichero, por lo cual nos avisará de que no existe.
 
 ```bash
 docker build -t ejemplo ./
@@ -200,7 +200,7 @@ docker run ejemplo
 ```
 ### `Label`
 ---
-Se trata de etiquetas que estan pensadas para dar metadara a la imagen. 
+Se trata de etiquetas que están pensadas para dar metadatos a la imagen.
 
 ```bash
 FROM ubuntu:22.04
@@ -214,7 +214,7 @@ CMD ["echo","Labels usados"]
 
 ### `User`
 ---
-User define quien ejecuta la tarea que indican los comandos inferiores, por ejemplo si creeamos un servicio que debe configurado por un usuario concreto. Adicionalmente el usuario debe exitir para que el comando funcione correctamente. Por defecto si no se pone nada el usuario es root.
+User define quién ejecuta la tarea que indican los comandos inferiores, por ejemplo si creamos un servicio que debe ser configurado por un usuario concreto. Adicionalmente, el usuario debe existir para que el comando funcione correctamente. Por defecto, si no se pone nada, el usuario es root.
 
 Un ejemplo usando el comando whoami que devuelve el usuario con el que se ejecuta:
 
@@ -234,7 +234,7 @@ docker run ejemplo
 >> example_user
 ```
 
-Esto puede provocar problemas de permisos si lo ejecutamos incorrectamente pero si se gestiona bien puede evitar ataques de desplazamiento lateral en nuestro sistema por lo que es una buena práctcica no usar siempre el usuario por defecto.
+Esto puede provocar problemas de permisos si lo ejecutamos incorrectamente, pero si se gestiona bien puede evitar ataques de desplazamiento lateral en nuestro sistema, por lo que es una buena práctica no usar siempre el usuario por defecto.
 
 Un ejemplo de contenedor que da problemas
 
@@ -260,11 +260,11 @@ prueba_user % docker run ejemplo
 ```
 ### `Entrypoint`
 ---
-Cuando el comando que se quiere ejecutar en docker requiere de lanzar varios procesos por ejemplo o de descargar cosas que varian con el tiempo como un repositorio con un conjunto de datos, como por ejemplo un modelo de AI de hugginface podemos ejecutarlos con un entrypoint o un punto de entrada a traves del cual podemos ejecutar una lista de comandos completa cada vez que se instancie un contenedor desde a la imagnen.
+Cuando el comando que se quiere ejecutar en Docker requiere lanzar varios procesos, por ejemplo, o descargar cosas que varían con el tiempo, como un repositorio con un conjunto de datos o un modelo de IA de Hugging Face, podemos ejecutarlos con un entrypoint o un punto de entrada a través del cual podemos ejecutar una lista de comandos completa cada vez que se instancie un contenedor desde la imagen.
 
-Esto sigue la filosifía DevOps en la que el contenido/modelo/datos del contenedor se actualizan sin necesidad de reconstruir la imagen, haciendo que con un reinicio del contenedor sea suficiente.
+Esto sigue la filosofía DevOps, en la que el contenido, modelo o datos del contenedor se actualizan sin necesidad de reconstruir la imagen, haciendo que con un reinicio del contenedor sea suficiente.
 
-Otra opcion util de usar entrypoints es que muchas veces las aplicaciones que ejecutemos no son capaces de interpretar variables de entorno (ENV`s) por si mismos por lo que se puede hacer uso de templates que tomen la variable de entorno y la sustutuyan en el template. Esto podrá no parecer util pero en orquestacion es crucial para que los sistemas funcionen bien.
+Otra opción útil de usar entrypoints es que muchas veces las aplicaciones que ejecutemos no son capaces de interpretar variables de entorno (ENV`s) por sí mismas, por lo que se puede hacer uso de templates que tomen la variable de entorno y la sustituyan en el template. Esto podrá no parecer útil, pero en orquestación es crucial para que los sistemas funcionen bien.
 
 Por lo general el comando ENTRYPOINT lo que indica a docker es como debe ejecutar el comando CMD, por defecto 
 este entrypoint es 
@@ -272,7 +272,7 @@ este entrypoint es
 ```bash
 ENTRYPOINT ["/bin/bash","-c"] # Entrypoint por defecto
 ```
-Que implica que se ejecutará en bash la linea de comandos y argumentos que se reciba en CMD.
+Que implica que se ejecutará en bash la línea de comandos y argumentos que se reciba en CMD.
 
 Sin embargo, podemos hacer modificaciones haciendo uso por ejemplo de ficheros de entrypoint.sh, por ejemplo:
 
@@ -285,21 +285,21 @@ envsubst < /var/www/html/index.html.template > /var/www/html/index.html
 exec "$@"
 ```
 
-De esta forma primero se ejecutará la sustitucion de variables de entorno que hace envsubst y luego exec $@ ejecutará lo que se haya recibido por el CMD que en este caso sería la instruccion
+De esta forma primero se ejecutará la sustitución de variables de entorno que hace envsubst y luego exec $@ ejecutará lo que se haya recibido por el CMD, que en este caso sería la instrucción
 
 ```bash
 CMD ["apachectl","-D","FOREGROUND"]
 ```
 
-Por utlimo definimos la plantilla que se va a usar. En este caso una [plantilla HTML](/imagenes/prueba_entrypoint/index.html.template) en la que esta indicado con:
+Por último definimos la plantilla que se va a usar. En este caso una [plantilla HTML](/imagenes/prueba_entrypoint/index.html.template) en la que está indicado con:
 
 ```bash
 ${HOST_USER}
 ```
 
-Donde y que variable de entorno debe sustiuirse para generar el fichero final.
+Dónde y qué variable de entorno debe sustituirse para generar el fichero final.
 
-Un ejemplo de entrypoint que tambien es util es para añadir logs al contenedor que estamos ejecutando, por ejemplo
+Un ejemplo de entrypoint que también es útil es para añadir logs al contenedor que estamos ejecutando, por ejemplo:
 
 ```bash
 #!/bin/bash
@@ -478,7 +478,6 @@ ENTRYPOINT ["./echo_server"]
 CMD ["--port", "8000"]
 ```
 Como nota, el binario que hemos construido admite los parámetros `-p [puerto] o --port [puerto]` para indicar el puerto en el que se expone el servcio
-
 
 
 

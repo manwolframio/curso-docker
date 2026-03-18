@@ -2,12 +2,12 @@
 
 En este apartado se aprenderá a manejar los distintos tipos de objetos que permiten mantener almacenamiento persistente.
 
-Existen tres tipos de volumenes en docker:
+Existen tres tipos de volúmenes en Docker:
 - Host
-- Anonymus
+- Anonymous
 - Named volumes
 
-Esta parte está mas asiganda a contenedores que no corren standalone, es decir, con docker run, si no que se ejecutan empleando orquestadores como docker compose o kubernettes, en la que estos volumenes se puedan gestionar más facilmente.
+Esta parte está más asignada a contenedores que no corren standalone, es decir, con docker run, sino que se ejecutan empleando orquestadores como Docker Compose o Kubernetes, en los que estos volúmenes se pueden gestionar más fácilmente.
 
 ## Importancia de los volúmenes
 Vamos a lanzar un primer contenedor con un volumen, en este caso un mysql al que le asociaremos un volumen:
@@ -16,27 +16,27 @@ Vamos a lanzar un primer contenedor con un volumen, en este caso un mysql al que
 docker run -d  --name "mysql_server" -e "MYSQL_ROOT_PASSWORD=12345678" -e "MYSQL_DATABASE=docker-db" -p 3306:3306 mysql:9.0
 ```
 
-Este comando generará un contenedor con una BBDD mysql que tendrá una base de datos llamada ```docker-db``` y una conraseña de root.
-Ahora vamos a acceder a la bbdd de dicho contenedor:
+Este comando generará un contenedor con una BBDD MySQL que tendrá una base de datos llamada ```docker-db``` y una contraseña de root.
+Ahora vamos a acceder a la BBDD de dicho contenedor:
 
 ```bash
 docker exec -it  mysql_server mysql -h localhost -p12345678
 ``` 
 
-Cuando ya seamos capaces de acceder a ella vamso a ejecutar el siguiente comando: 
+Cuando ya seamos capaces de acceder a ella vamos a ejecutar el siguiente comando:
 ```bash
 docker exec -it  mysql_server mysqldump -h localhost -p12345678 sys > dump.sql
 ```
 
 Que lo que hace es generar una copia de la BBDD sys que es una de las que aparecen por defecto y la almacena en el host, en el fichero ```dump.sql```
 
-Ahora, con este dump, vamos a generar un nuevo contedor con mysql 
+Ahora, con este dump, vamos a generar un nuevo contenedor con MySQL.
 
 ```bash
 docker run -d  --name "mysql_server_replica" -e "MYSQL_ROOT_PASSWORD=12345678" -e "MYSQL_DATABASE=docker-db" -p 3307:3306 mysql:9.0
 ```
 
-Y vamos a cargar en sus bbdd el dump anterior con el comando:
+Y vamos a cargar en su BBDD el dump anterior con el comando:
 ```bash
 docker exec -i mysql_server_replica mysql -h localhost -p12345678 docker-db < dump.sql
 ```
@@ -75,17 +75,17 @@ mysql> SHOW tables;
 Empty set (0.00 sec) # Se muestran vacias para dicha BBDD
 ```
 
-Que hubiese pasado si esta informacion fuese valiosa?. Aquí es donde entra el concepto de almacenamiento persistente, es deir de volumenes que aunque se elimine el contedor permanecen activos manteniendo esta informaición.
+¿Qué hubiese pasado si esta información fuese valiosa? Aquí es donde entra el concepto de almacenamiento persistente, es decir, de volúmenes que, aunque se elimine el contenedor, permanecen activos manteniendo esta información.
 
-Como nota, en este caso, hemos eliminado manualmente los contenedores, lo cual hace que parezca que esta idea no tenga sentido, pero los contenedores se pueden reiniciar, pueden fallar y pueden colapsar, por lo que es necesario mantener la informacion a buen recaudo.
+Como nota, en este caso hemos eliminado manualmente los contenedores, lo cual hace que parezca que esta idea no tenga sentido, pero los contenedores se pueden reiniciar, pueden fallar y pueden colapsar, por lo que es necesario mantener la información a buen recaudo.
 
-# Definir volumenes de host
+# Definir volúmenes de host
 
 Los **volúmenes de host Docker** permiten persistir datos fuera del ciclo de vida del contenedor, mapeando directorios de la máquina física al contenedor. Son esenciales para compartir archivos entre el host y el contenedor, o entre contenedores, almacenándose generalmente en ```/var/lib/docker/volumes/```. Se gestionan mediante docker volume.
 
-Este mapa que se establece entre contenedor y host es similar al concepto de montar volumenes que se maneja en ssoo. 
+Este mapa que se establece entre contenedor y host es similar al concepto de montar volúmenes que se maneja en sistemas operativos.
 
-Para ver su funcionamiento vamos a ver una pequela prueba con la imagen anterior pero asociandola un volumen. Para ello, se añade al comando ```docker run`` la opcion ```-v <direccion del host>:<direccion del contenedor>```
+Para ver su funcionamiento vamos a ver una pequeña prueba con la imagen anterior, pero asociándole un volumen. Para ello, se añade al comando ```docker run``` la opción ```-v <direccion del host>:<direccion del contenedor>```
 
 ```bash
 docker run -d  --name "mysql_server_replica" -e "MYSQL_ROOT_PASSWORD=12345678" -e "MYSQL_DATABASE=docker-db" -p 3306:3306 -v /var/lib/docker/volumes/mysql_server_replica:/var/lib/mysql mysql:9.0
@@ -101,7 +101,7 @@ Si queremos comprobar si se ha montado correctamente podemos ejecutar los siguie
 docker inspect mysql_server_replica
 ```
 
-que nos devuelve en formato json toda la informacion del contenedor o si queremos algo más concreto:
+que nos devuelve en formato JSON toda la información del contenedor o, si queremos algo más concreto:
 
 ```bash
 docker inspect mysql_server_replica --format '{{json .Mounts}}'
@@ -109,12 +109,11 @@ docker inspect mysql_server_replica --format '{{json .Mounts}}'
 [{"Type":"bind","Source":"/var/lib/docker/volumes/mysql_server_replica","Destination":"/var/lib/mysql","Mode":"","RW":true,"Propagation":"rslave"}]
 ```
 
-que nos devuelve la parte del json en la que se especifican los volumenes.
+que nos devuelve la parte del JSON en la que se especifican los volúmenes.
 
-Ahora si eliminamos el contenedor pero no el volumen, podemos restituirlo facilmente o recuperar la informacion.
+Ahora, si eliminamos el contenedor pero no el volumen, podemos restituirlo fácilmente o recuperar la información.
 
-# Volumenes anonimos
-
+# Volúmenes anónimos
 
 
 
