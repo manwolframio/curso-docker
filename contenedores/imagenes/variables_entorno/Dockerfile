@@ -1,0 +1,5 @@
+FROM ubuntu:22.04
+
+ENV NOMBRE_IMAGEN="UBUNTU2204"
+
+CMD ["sh", "-c", "echo $NOMBRE_IMAGEN"]
