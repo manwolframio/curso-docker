@@ -115,9 +115,9 @@ Ahora, si eliminamos el contenedor pero no el volumen, podemos restituirlo fáci
 
 # Volúmenes anónimos
 
-En este tipo de volumenes es funcionamiento es análgo al de los volumenes de host, se definen al ejecutar el contenedor, salvo que esta vez no tienen un punto de montaje en el host si no que funcionan como espacios persistentes no accesibles desde el host.
+En este tipo de volúmenes su funcionamiento es análogo al de los volúmenes de host. Se definen al ejecutar el contenedor, salvo que esta vez no tienen un punto de montaje en el host, sino que funcionan como espacios persistentes no accesibles desde el host.
 
-Para crearlos el proceso es análogo al aterior, añadiendo ```-v <directorio del contenedor>```. Por ejemplo:
+Para crearlos el proceso es análogo al anterior, añadiendo ```-v <directorio del contenedor>```. Por ejemplo:
 
 ```bash
 docker run -d  --name "mysql_server_replica" -e "MYSQL_ROOT_PASSWORD=12345678" -e "MYSQL_DATABASE=docker-db" -p 3306:3306 -v /var/lib/mysql mysql:9.0
@@ -131,11 +131,11 @@ docker inspect mysql_server_replica --format '{{json .Mounts}}'
 [{"Type":"volume","Name":"b465952e4a64a39e2dafa6b6fc92e99dd6b4edae38ce5a257e46c19bae1e9698","Source":"/var/lib/docker/volumes/b465952e4a64a39e2dafa6b6fc92e99dd6b4edae38ce5a257e46c19bae1e9698/_data","Destination":"/var/lib/mysql","Driver":"local","Mode":"","RW":true,"Propagation":""}]
 ```
 
-Este es el tipo que menos debe usarse, ya que es complicado acceder y rescatar la informacion en dichos contenedores.
+Este es el tipo que menos debe usarse, ya que es complicado acceder y rescatar la información en dichos contenedores.
 
-# Instruccion de volumenes en el dockerfile
+# Instrucción de volúmenes en el Dockerfile
 
-Como hemos visto antes, cuando se instancia un contenedor a partir de una imágen se pueden sobreescribir algunas de sus capas, cosa que será igual en el docker compose y los distintos orquestadores. Ya hemos visto que se puede sobreescribir el ```CMD```. Tambíen hemos visto que se pueden sobreescribir las variables de entorno ```ENV```. Pues con volumenes también se puede. Para ello, cuando definimos una imágen, es posible tambíen definir volumenes en esta, usando la instruccion ```VOLUME``` que ya vimos.
+Como hemos visto antes, cuando se instancia un contenedor a partir de una imagen se pueden sobreescribir algunas de sus capas, cosa que será igual en Docker Compose y los distintos orquestadores. Ya hemos visto que se puede sobreescribir el ```CMD```. También hemos visto que se pueden sobreescribir las variables de entorno ```ENV```. Pues con volúmenes también se puede. Para ello, cuando definimos una imagen, es posible también definir volúmenes en esta, usando la instrucción ```VOLUME``` que ya vimos.
 
 Un ejemplo simple: 
 
@@ -171,18 +171,18 @@ docker info | grep -i root Docker Root Dir: /var/lib/docker
 ```
 Pues en dicha carpeta está el volumen montado.
 
-Un pequeño comentario. Si estamos llenando todo de volumenes y repos y queremos dejarlo limpio se propone el siguiente comando:
+Un pequeño comentario: si estamos llenando todo de volúmenes y repos y queremos dejarlo limpio, se propone el siguiente comando:
 
 ```bash
 docker rm -f $(docker ps -aq)
 docker system prune -a --volumes -f
 ```
 
-# Volumenes con nombre
+# Volúmenes con nombre
 
-Esta es la mejor version de volumenes de docker ya que permite generar volumenes, compartirlos entre varios contenedores y gestionarlos bien. 
+Esta es la mejor versión de volúmenes de Docker, ya que permite generar volúmenes, compartirlos entre varios contenedores y gestionarlos bien.
 
-Como se crea un volumen con nombre:
+Cómo se crea un volumen con nombre:
 
 ```bash
 docker volume create <nombre del volumen>
@@ -202,13 +202,13 @@ DRIVER    VOLUME NAME
 local     mysql_vol
 ```
 
-Y podemos asignarselo a un contedor. Para ello retomamos la imagen mysql que habíamos ejecutado antes:
+Y podemos asignárselo a un contenedor. Para ello retomamos la imagen MySQL que habíamos ejecutado antes:
 
 ```bash
 docker run -d  --name "mysql_server_replica" -e "MYSQL_ROOT_PASSWORD=12345678" -e "MYSQL_DATABASE=docker-db" -p 3307:3306 -v mysql_vol:/var/lib/mysql mysql:9.0
 ```
 
-Para comprobar ahora que hay cosas, vamos a ejecutar un contenedor con ubuntu con el mismo volumen montado pero en un directorio distnto, por ejemplo:
+Para comprobar ahora que hay cosas, vamos a ejecutar un contenedor con Ubuntu con el mismo volumen montado, pero en un directorio distinto, por ejemplo:
 
 ```bash
 docker run -it -v mysql_vol:/home/mysql --rm ubuntu:22.04 bash
@@ -226,7 +226,8 @@ mysql
 binlog.000001   client-cert.pem   ibtmp1                  performance_schema   sys ...
 ```
 
-Efectivamente, hemos podidio montar el mismo volumen en este nuevo contenedor y hemos visto que los archivos del contenedor con mysql están en el.
+Efectivamente, hemos podido montar el mismo volumen en este nuevo contenedor y hemos visto que los archivos del contenedor con MySQL están en él.
+
 
 
 
