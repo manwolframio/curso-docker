@@ -1,0 +1,11 @@
+services:
+  database:
+    container_name: mysql-container
+    image: mysql:9.0
+    ports:
+      - "3306:3306"
+    env_file:
+      - "mysql.env"
+    environment:
+      - MYSQL_DATABASE=docker-db
+

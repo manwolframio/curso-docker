@@ -1,0 +1,24 @@
+services:
+  web-server-main:
+    image: nginx
+    container_name: main-webserver
+    ports:
+      - "80:80"
+    networks:
+      - internal
+
+  web-server-back:
+    image: nginx
+    container_name: backup-webserver
+    ports:
+      - "81:80"
+    networks:
+      - internal
+
+networks:
+  internal:
+    driver: bridge
+    ipam:
+      config:
+        - subnet: 10.0.0.0/24
+          gateway: 10.0.0.1
