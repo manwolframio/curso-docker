@@ -13,22 +13,22 @@ Por lo general, cuando se construye una imagen, la que sea, se parte de una imag
 - [GitHub Container Registry](https://docs.github.com/es/packages/working-with-a-github-packages-registry/working-with-the-container-registry)
 
 Para hacer uso de ellos en el FROM se debe indicar el origen de la imagen. Por ejemplo, si lo que queremos es desplegar un MongoDB de Docker Hub:
-```bash
+```python
 docker pull mongo:8.0.13-noble # De esta forma lo descargamos
 
 docker run -p 27017:27017 -d mongo:8.0.13-noble # De esta forma lo ejecutamos
 ```
 
 El nombre de los contenedores se formatea en tags, que tienen la siguiente estructura:
-```bash
+```python
 <repositorio de origen>/<autor>/nombre_imagen:version
 ```
 Al descargarlo podemos ver que hará varios pulls. Si descargamos versiones similares de la misma imagen solo se hará pull de las layers que sean diferentes; el resto se notificarán como already exist, o is up to date si no cambia nada. Por ejemplo:
-```bash
+```python
 docker pull mongo:latest
 ```
 
-```bash 
+```python
 docker pull mongo:3.0.18.noble
 ```
 Aunque es la misma imagen, tiene distinta etiqueta, por lo que se conserva la información de todas las capas.
@@ -38,7 +38,7 @@ Siempre es buena práctica consultar las imágenes disponibles en el repositorio
 #### Imagen de ejemplo
 Vamos a construir rápidamente una imagen de Apache y PHP en Ubuntu 22 como ejemplo.
 
-```bash
+```python
 # version inicial de la imagen de apache y php [V0]
 FROM ubuntu:22.04
 
@@ -56,18 +56,18 @@ En este caso la imagen corre el proceso en foreground, que es como debe hacerse,
 
 Primero construimos la imagen:
 
-```bash
+```python
 docker build -t php_and_apache:v0 ./
 ```
 y la ejecutamos:
 
-```bash
+```python
 docker run --name phpApache -d php_and_apache:v0
 ```
 
 ## Comandos de interés:
 
-```bash
+```python
 docker ps # Para ver los contenedores que hay vivos
 docker ps -a # Para ver todos los contenedores
 docker stop <nombre del contenedor> # Detiene el contenedor, borrando todo lo que no esté en almacenamiento persistente
@@ -97,7 +97,7 @@ Copia de ficheros del dokerhost al contenedor
 ---
 Clona una imagen de base sobre la que vamos a construir nuestro contenedor. Esta imagen puede ser bien un S. O., el cual se virtualizará aprovechando el kernel del Docker host (virtualización ligera), o un contenedor que ya funcione sobre el cual queramos añadir una determinada funcionalidad.
 
-```bash
+```python
 FROM ubuntu:22.04
 
 FROM nginx:latest
@@ -109,7 +109,7 @@ FROM nginx:latest
 ---
 Como ya sabemos, permite instalar dependencias en las imágenes. Son comandos que deben tener un final y se deben usar sin interacción del usuario, como:
 
-```bash
+```python
 sudo apt-get <> -y # donde el -y permite que no se pida confirmación al usuario de cómo se desea proceder
 ```
 
@@ -117,13 +117,13 @@ sudo apt-get <> -y # donde el -y permite que no se pida confirmación al usuario
 ---
 Traslada el directorio del host que se le especifique como primer argumento al destino que se le especifique como segundo argumento en el contenedor.
 
-```bash
+```python
 COPY <origen> <destino>
 ```
 
 De esta forma añadimos a la imagen que construimos antes una web de ejemplo
 
-```bash
+```python
 # Conteendor en el que corren los servicios de apache y php
 
 FROM ubuntu:22.04
@@ -150,7 +150,7 @@ Es una de las opciones más útiles porque permite establecer parámetros progra
 
 Un ejemplo simple:
 
-```bash
+```python
 # Ejemplo de uso de env
 FROM ubuntu:22.04
 
@@ -163,7 +163,7 @@ RUN rm -rf /var/lib/apt/lists/*
 CMD ["/bin/sh", "-c", "echo $USER_NAME"]
 ```
 Si construimos y ejecutamos la imagen
-```bash
+```python
 >> docker build -t env_test:v0 ./
 >> docker run env_test:v0
 Juan
@@ -174,7 +174,7 @@ Esta instrucción fija el directorio desde el que se ejecutarán los comandos qu
 
 ejemplo de uso de workdir:
 
-``` bash
+```python
 FROM ubuntu:22.04
 
 RUN apt-get update && apt-get upgrade -y
@@ -192,7 +192,7 @@ CMD ["python3","ejemplo_python.py"]
 
 En esta imagen, si no usamos workdir el directorio no se cambia y se ejecutará el código de Python del segundo copy y no se leerá el fichero, por lo cual nos avisará de que no existe.
 
-```bash
+```python
 docker build -t ejemplo ./
 docker run ejemplo        
 >> El archivo './texto.txt' no existe.
@@ -200,7 +200,7 @@ docker run ejemplo
 
 En cambio si descomentamos esa línea nos saldrá lo que se haya puesto en el txt. 
 
-```bash
+```python
 docker build -t ejemplo ./
 docker run ejemplo        
 >> Has usado bien workdir :)
@@ -209,7 +209,7 @@ docker run ejemplo
 ---
 Se trata de etiquetas que están pensadas para dar metadatos a la imagen.
 
-```bash
+```python
 FROM ubuntu:22.04
 
 LABEL vendor="<creador de la imagen>"
@@ -225,7 +225,7 @@ User define quién ejecuta la tarea que indican los comandos inferiores, por eje
 
 Un ejemplo usando el comando whoami que devuelve el usuario con el que se ejecuta:
 
-```bash
+```python
 FROM ubuntu:22.04
 
 RUN apt-get update && apt-get upgrade -y sudo &&
@@ -235,7 +235,7 @@ USER example_user
 CMD ["whoami"]
 ```
 Ahora ejecutamos:
-```bash
+```python
 docker build -t ejemplo ./
 docker run ejemplo
 >> example_user
@@ -245,7 +245,7 @@ Esto puede provocar problemas de permisos si lo ejecutamos incorrectamente, pero
 
 Un ejemplo de contenedor que da problemas
 
-```bash
+```python
 FROM ubuntu:22.04
 
 RUN apt-get update && apt-get upgrade -y
@@ -261,7 +261,7 @@ CMD ["bin/bash","-c","echo $USER >> usuario.txt"]
 
 Esta imagen intenta crear un archivo pero no le hemos dado permisos al nuevo usuario para crearlo por lo que devueve:
 
-```bash
+```python
 prueba_user % docker run ejemplo        
 >> bin/bash: line 1: usuario.txt: Permission denied
 ```
@@ -276,14 +276,14 @@ Otra opción útil de usar entrypoints es que muchas veces las aplicaciones que 
 Por lo general el comando ENTRYPOINT lo que indica a docker es como debe ejecutar el comando CMD, por defecto 
 este entrypoint es 
 
-```bash
+```python
 ENTRYPOINT ["/bin/bash","-c"] # Entrypoint por defecto
 ```
 Que implica que se ejecutará en bash la línea de comandos y argumentos que se reciba en CMD.
 
 Sin embargo, podemos hacer modificaciones haciendo uso por ejemplo de ficheros de entrypoint.sh, por ejemplo:
 
-```bash
+```python
 #!/bin/sh
 set -eu # Si algun comando falla o hay variables sin defir el proceso falla
 # Genera el index.html final a partir de la plantilla
@@ -294,13 +294,13 @@ exec "$@"
 
 De esta forma primero se ejecutará la sustitución de variables de entorno que hace envsubst y luego exec $@ ejecutará lo que se haya recibido por el CMD, que en este caso sería la instrucción
 
-```bash
+```python
 CMD ["apachectl","-D","FOREGROUND"]
 ```
 
 Por último definimos la plantilla que se va a usar. En este caso una [plantilla HTML](/imagenes/prueba_entrypoint/index.html.template) en la que está indicado con:
 
-```bash
+```python
 ${HOST_USER}
 ```
 
@@ -308,7 +308,7 @@ Dónde y qué variable de entorno debe sustituirse para generar el fichero final
 
 Un ejemplo de entrypoint que también es útil es para añadir logs al contenedor que estamos ejecutando, por ejemplo:
 
-```bash
+```python
 #!/bin/bash
 set -eu
 echo "Ejecutando comando en el CMD"
@@ -319,7 +319,7 @@ exec "$@"
 
 Para ver el log:
 
-```bash
+```python
 docker build -t imagen_ejemplo ./
 docker run -p 8080:80 --name contenedor_ejemplo -d imagen_ejemplo
 docker logs contenedor_ejemplo
@@ -327,7 +327,7 @@ docker logs contenedor_ejemplo
 
 Un ejemplo en el que se hace uso de todo esto es el siguiente:
 
-```bash
+```python
 FROM ubuntu:22.04
 
 ENV DEBIAN_FRONTEND=noninteractive
@@ -402,7 +402,7 @@ El flujo con el que debemos trabajar es el siguiente:
 
 Para ilustrar el funcionamiento de esto se ha generado un dockerfile que realiza una compilacion de un servidor de echo basado en TCP que se ha programado en C. Este programa permite que el usuario se conecte por ejemplo empleando netcat de la siguiente forma:
 
-``` bash
+```python
 nc <ip del servidor> <puerto>
 
     >> Hola
@@ -413,18 +413,18 @@ nc <ip del servidor> <puerto>
 
 Para construir la imagen se estructuran dos contenedores, el primero de ellos que será el constructor o builder. Esto se indica con:
 
-``` bash
+```python
 From ubuntu:22.04 AS build
 ```
 
 De esta forma cuando pasemos al segundo contenedor se podrá hacer referencia al primero de la siguiente forma:
-``` bash
+```python
 COPY --from=builder /app/echo_server .
 ```
 
 La estructura de ficheros de nuestra aplicacion es la siguiente:
 
-``` bash 
+```python
 source/
 │
 ├── src/
@@ -452,7 +452,7 @@ source/
     - Compilar y genearar el binario con el que se ejecutará la aplicación
 
 Resultando en el siguiente Dockerfile:
-```bash
+```python
 FROM ubuntu:22.04 AS builder
 ENV DEBIAN_FRONTEND=noninteractive
 RUN \
@@ -475,7 +475,7 @@ Como nota la ejecucion del Make admite como parametro `BIN=[Nombre del binario d
     - Ejecucion del binario
 
 Resultando en el siguiente Dockerfile:
-```bash
+```python
 FROM ubuntu:22.04
 ENV DEBIAN_FRONTEND=noninteractive
 

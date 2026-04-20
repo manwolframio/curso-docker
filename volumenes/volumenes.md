@@ -19,19 +19,19 @@ Esta parte está más asignada a contenedores que no corren standalone, es decir
 ## Importancia de los volúmenes
 Vamos a lanzar un primer contenedor con un volumen, en este caso un mysql al que le asociaremos un volumen:
 
-```bash
+```python
 docker run -d  --name "mysql_server" -e "MYSQL_ROOT_PASSWORD=12345678" -e "MYSQL_DATABASE=docker-db" -p 3306:3306 mysql:9.0
 ```
 
 Este comando generará un contenedor con una BBDD MySQL que tendrá una base de datos llamada ```docker-db``` y una contraseña de root.
 Ahora vamos a acceder a la BBDD de dicho contenedor:
 
-```bash
+```python
 docker exec -it  mysql_server mysql -h localhost -p12345678
 ``` 
 
 Cuando ya seamos capaces de acceder a ella vamos a ejecutar el siguiente comando:
-```bash
+```python
 docker exec -it  mysql_server mysqldump -h localhost -p12345678 sys > dump.sql
 ```
 
@@ -39,19 +39,19 @@ Que lo que hace es generar una copia de la BBDD sys que es una de las que aparec
 
 Ahora, con este dump, vamos a generar un nuevo contenedor con MySQL.
 
-```bash
+```python
 docker run -d  --name "mysql_server_replica" -e "MYSQL_ROOT_PASSWORD=12345678" -e "MYSQL_DATABASE=docker-db" -p 3307:3306 mysql:9.0
 ```
 
 Y vamos a cargar en su BBDD el dump anterior con el comando:
-```bash
+```python
 docker exec -i mysql_server_replica mysql -h localhost -p12345678 docker-db < dump.sql
 ```
 Saltará un error ya que estamos cargando tablas con distintas funciones, lo ignoramos, ya que solo queremos ver el funcionamiento del almacenamiento no persistente.
 
 Para ello, ahora consultamos esta BBDD de la replica:
 
-```bash
+```python
 docker exec -it mysql_server_replica mysql -h localhost -p12345678 docker-db          
 
 mysql> SHOW tables
@@ -68,7 +68,7 @@ mysql> SHOW tables
 
 Si ahora eliminamos la réplica, este contenido se borrará, lo cual podemos observar de la siguiente forma:
 
-```bash
+```python
 # Eliminamos el contenedor
 docker rm -f mysql_server_replica
 
@@ -94,7 +94,7 @@ Este mapa que se establece entre contenedor y host es similar al concepto de mon
 
 Para ver su funcionamiento vamos a ver una pequeña prueba con la imagen anterior, pero asociándole un volumen. Para ello, se añade al comando ```docker run``` la opción ```-v <direccion del host>:<direccion del contenedor>```
 
-```bash
+```python
 docker run -d  --name "mysql_server_replica" -e "MYSQL_ROOT_PASSWORD=12345678" -e "MYSQL_DATABASE=docker-db" -p 3306:3306 -v /var/lib/docker/volumes/mysql_server_replica:/var/lib/mysql mysql:9.0
 ```
 
@@ -104,13 +104,13 @@ Este directorio ```/var/lib/mysql``` es en el que mysql opera para almacenar las
 
 Si queremos comprobar si se ha montado correctamente podemos ejecutar los siguientes comandos:
 
-```bash
+```python
 docker inspect mysql_server_replica
 ```
 
 que nos devuelve en formato JSON toda la información del contenedor o, si queremos algo más concreto:
 
-```bash
+```python
 docker inspect mysql_server_replica --format '{{json .Mounts}}'
 
 [{"Type":"bind","Source":"/var/lib/docker/volumes/mysql_server_replica","Destination":"/var/lib/mysql","Mode":"","RW":true,"Propagation":"rslave"}]
@@ -126,13 +126,13 @@ En este tipo de volúmenes su funcionamiento es análogo al de los volúmenes de
 
 Para crearlos el proceso es análogo al anterior, añadiendo ```-v <directorio del contenedor>```. Por ejemplo:
 
-```bash
+```python
 docker run -d  --name "mysql_server_replica" -e "MYSQL_ROOT_PASSWORD=12345678" -e "MYSQL_DATABASE=docker-db" -p 3306:3306 -v /var/lib/mysql mysql:9.0
 ```
 
 Para ver el resultado se puede ejecutar el mismo comando de antes:
 
-```bash
+```python
 docker inspect mysql_server_replica --format '{{json .Mounts}}'
 
 [{"Type":"volume","Name":"b465952e4a64a39e2dafa6b6fc92e99dd6b4edae38ce5a257e46c19bae1e9698","Source":"/var/lib/docker/volumes/b465952e4a64a39e2dafa6b6fc92e99dd6b4edae38ce5a257e46c19bae1e9698/_data","Destination":"/var/lib/mysql","Driver":"local","Mode":"","RW":true,"Propagation":""}]
@@ -146,7 +146,7 @@ Como hemos visto antes, cuando se instancia un contenedor a partir de una imagen
 
 Un ejemplo simple: 
 
-```bash
+```python
 FROM ubuntu:22.04
 # Se crea un volumen anonimo en el contenedor
 VOLUME ["/opt"]
@@ -154,7 +154,7 @@ VOLUME ["/opt"]
 CMD ["tail", "-f", "/dev/null"]
 ```
 
-```bash
+```python
 # Creamos el contenedor
 docker build -t imagen_prueba_vol:0 .
 
@@ -173,14 +173,14 @@ sample_2.txt
 
 Ahora que ya tenemos ficheros en el contenedor, es momento de ver donde están. Para ello consultamos el docker root
 
-```bash
+```python
 docker info | grep -i root Docker Root Dir: /var/lib/docker
 ```
 Pues en dicha carpeta está el volumen montado.
 
 Un pequeño comentario: si estamos llenando todo de volúmenes y repos y queremos dejarlo limpio, se propone el siguiente comando:
 
-```bash
+```python
 docker rm -f $(docker ps -aq)
 docker system prune -a --volumes -f
 ```
@@ -191,18 +191,18 @@ Esta es la mejor versión de volúmenes de Docker, ya que permite generar volúm
 
 Cómo se crea un volumen con nombre:
 
-```bash
+```python
 docker volume create <nombre del volumen>
 ```
 
 Por ejemplo
-```bash
+```python
 docker volume create mysql_vol
 ```
 
 Ahora podemos comprobar si está bien creado:
 
-```bash
+```python
 docker volume ls
 
 DRIVER    VOLUME NAME
@@ -211,13 +211,13 @@ local     mysql_vol
 
 Y podemos asignárselo a un contenedor. Para ello retomamos la imagen MySQL que habíamos ejecutado antes:
 
-```bash
+```python
 docker run -d  --name "mysql_server_replica" -e "MYSQL_ROOT_PASSWORD=12345678" -e "MYSQL_DATABASE=docker-db" -p 3307:3306 -v mysql_vol:/var/lib/mysql mysql:9.0
 ```
 
 Para comprobar ahora que hay cosas, vamos a ejecutar un contenedor con Ubuntu con el mismo volumen montado, pero en un directorio distinto, por ejemplo:
 
-```bash
+```python
 docker run -it -v mysql_vol:/home/mysql --rm ubuntu:22.04 bash
 
 # Se nos abre una consola

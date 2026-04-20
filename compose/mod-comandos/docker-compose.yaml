@@ -1,0 +1,15 @@
+services:
+  web-1:
+    image: ubuntu:22.04
+    environment:
+      - DEBIAN_FRONTEND=noninteractive
+      - TZ=Europe/Madrid
+    command:
+      - getent
+      - ahostsv4
+      - google.es
+
+networks: {}
+# vacio
+volumes: {}
+# vacio

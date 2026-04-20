@@ -1,0 +1,29 @@
+services:
+  web:
+    build:
+      context: ./source
+      dockerfile: Dockerfile
+    image: doble-web-python:latest
+    ports:
+    - 3000:3000
+    - 3001:3001
+    # Healthheck en el que solo se valida uno de los endpoints
+    # healthcheck:
+    #  test: ["CMD", "curl", "-f", "http://localhost:3000/healthcheck"]
+    #  interval: 2s
+    #  timeout: 60s
+    #  retries: 20
+
+    healthcheck:
+      test:
+        [
+          "CMD-SHELL",
+          "curl -f http://localhost:3000/healthcheck && curl -f http://localhost:3001/healthcheck || exit 1"
+        ]
+      interval: 2s
+      timeout: 60s
+      retries: 20
+
+networks: {}
+
+volumes: {}

@@ -17,7 +17,7 @@ Partiendo del punto más básico, cuando instalamos Docker, este mismo proceso n
 
 Para consultar estas redes se puede usar el comando:
 
-```bash
+```python
 docker network ls
 
 NETWORK ID     NAME      DRIVER    SCOPE
@@ -28,13 +28,13 @@ d2f775e0f794   host      host      local
 
 Para comprobarlo, vamos a desplegar un contenedor de los anteriores, por ejemplo:
 
-```bash
+```python
 docker run -d --name "prueba" ubuntu:22.04 tail -f /dev/null
 ```
 
 Con este contenedor en ejecución podemos consultar su estado de red con:
 
-```bash
+```python
 docker inspect prueba
 ```
 
@@ -50,19 +50,19 @@ Con el que obtendremos el siguiente resultado:
 
 Donde se observa que la red asignada es ```bridge```, que es la red por defecto, la cual podemos consultar con:
 
-```bash
+```python
 docker network inspect bridge
 ``` 
 Donde podremos ver lo siguiente:
 
 - El direccionamiento de la red. 
-```bash
+```python
 "Subnet": "172.17.0.0/16",
 "Gateway": "172.17.0.1"
 ```
 
 - Los contenedores asociados a ella:
-```bash
+```python
 "Containers": {
     "caa62506219f7b7388d9c46644d9b7cb12d905c67c0937162cb601dc36d82bcb": {
         "Name": "prueba",
@@ -76,13 +76,13 @@ Donde podremos ver lo siguiente:
 
 - La interfaz con la que el host se conecta a este bridge:
 
-```bash
+```python
 "com.docker.network.bridge.name": "docker0",
 ```
 
 Para comprobar esto ahora vamos a construir dos contenedores con la función ping instalada:
 
-```bash
+```python
 FROM ubuntu:22.04
 
 RUN apt-get update \
@@ -94,7 +94,7 @@ CMD ["tail", "-f", "/dev/null"]
 
 Ahora construimos la imagen y lanzamos los dos contenedores:
 
-```bash
+```python
 # Construimos la imagen
 docker build -t ubuntu-ping .
 
@@ -106,7 +106,7 @@ docker run --name cont_2 -d ubuntu-ping
 
 Con ambas instancias ya creadas, vamos a ver cuál es la IP que se le ha asignado a uno de ellos, por ejemplo a ```cont_1```:
 
-```bash
+```python
 docker inspect cont_1
 
 "Gateway": "172.17.0.1",
@@ -116,7 +116,7 @@ docker inspect cont_1
 Si lo que hemos aprendido es correcto, cuando el otro contenedor haga ping a esta IP debe ser capaz de alcanzar al contenedor, ya que están en la misma subred ```bridge```, que es la red por defecto.
 Para ello:
 
-```bash
+```python
 docker exec cont_2 ping -c 4 172.17.0.2
 
 PING 172.17.0.2 (172.17.0.2) 56(84) bytes of data.
@@ -136,7 +136,7 @@ Como vemos ha funcionado perfectamente.
 
 - Crear una red con direccionamiento automático:
 
-```bash
+```python
 docker network create <nombre de la red>
 ```
 
@@ -144,13 +144,13 @@ docker network create <nombre de la red>
 
 Cuando Docker crea una red bridge, también crea en el host una interfaz puente, por ejemplo ```docker0```. Esa interfaz recibe una IP dentro de la subred de la red Docker, y esa IP actúa como gateway para los contenedores conectados a esa red.
 
-```bash
+```python
 docker networ create --subnet <dir de red / mascara> --driver bridge --gateway <direccion del red del gw> <nombre de la red>
 ```
 
 Vamos ahora a realizar una prueba, creando dos redes, ```red-1``` y ```red-2```, y en cada una de ellas vamos a conectar un contenedor partiendo de la imagen que generamos antes para hacer ping.
 
-```bash
+```python
 # Red 1: 10.0.0.0/24
 docker network create  --subnet 10.0.0.0/24 --gateway 10.0.0.1 red_1
 # Red 2: 20.0.0.0/24
@@ -164,7 +164,7 @@ NETWORK ID     NAME      DRIVER
 
 Ahora creamos los contenedores:
 
-```bash
+```python
 ocker run --name "contenedor_red_1" -d --network "red_1" ubuntu-ping 
 
 docker run --name "contenedor_red_2" -d --network "red_2" ubuntu-ping 
@@ -172,7 +172,7 @@ docker run --name "contenedor_red_2" -d --network "red_2" ubuntu-ping
 
 Y vemos el direccionamiento que tiene cada uno:
 
-```bash
+```python
 # Contenedor en red 1
 docker network inspect red_1
 
@@ -192,7 +192,7 @@ docker network inspect red_2
 
 Cuando el contenedor de la red 1 hace ping al gw de la red 1:
 
-```bash
+```python
 docker exec -it contenedor_red_1 ping 10.0.0.1 -c 4
 
 PING 10.0.0.1 (10.0.0.1) 56(84) bytes of data.
@@ -204,7 +204,7 @@ PING 10.0.0.1 (10.0.0.1) 56(84) bytes of data.
 
 Sin embargo, cuando hace ping al otro contenedor:
 
-```bash
+```python
 docker exec -it contenedor_red_1 ping 20.0.0.2 -c 4
 
 PING 20.0.0.2 (20.0.0.2) 56(84) bytes of data.
@@ -221,19 +221,19 @@ Como hemos visto antes, cuando instanciamos un contenedor en base a una imagen p
 
 Otra opción dentro de la parte de networking de Docker es asociar el contenedor a la red cuando ya existe. Para ello se puede usar el siguiente comando:
 
-```bash
+```python
 docker network connect <red> <nombre del contenedor>
 ```
 
 Partiendo del caso anterior, en el que el contenedor 2 no podía comunicarse con el contenedor 1 por estar en distinta subred, vamos ahora a asociar el contenedor 2 a la red 1 también, haciendo que tenga un puerto en ambas. Para ello, ejecutamos el siguiente comando:
 
-```bash
+```python
 network connect red_1 contenedor_red_2
 ```
 
 Ahora consultamos la red 1 para ver si ya están los dos contenedores:
 
-```bash
+```python
 "Containers": {
 "0d8480b3a47de9b4effb5ce63abd2cbf152b567c088f1aa35f434da047f768e8": {
     "Name": "contenedor_red_2",
@@ -253,7 +253,7 @@ Ahora consultamos la red 1 para ver si ya están los dos contenedores:
 
 Ahora sí están los dos, de forma que entre ambos ya se pueden comunicar correctamente:
 
-```bash
+```python
 docker exec -it contenedor_red_1 ping 10.0.0.2 -c 4
 
 PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
@@ -266,13 +266,13 @@ PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
 
 Este comando es análogo al caso anterior, en el que se asociaba a un contenedor una red previamente definida. Para ello se utiliza el siguiente comando:
 
-```bash
+```python
 docker network disconnect <red> <contenedor>
 ```
 
 Siguiendo con el ejemplo de antes, vamos ahora a desconectar el contenedor 2 de la red 1 para ver si pierde la conectividad:
 
-```bash
+```python
 # Quitamos el contenedor
 docker network disconnect red_1 contenedor_red_2
 
@@ -301,6 +301,83 @@ PING 10.0.0.2 (10.0.0.2) 56(84) bytes of data.
 
 Tanto para eliminar redes como para eliminar volumenes y en general 
 
-```bash
+```python
 docker network rm red_1
 ```
+
+# Tipos de redes en docker
+
+Antes vimos que por defecto, en docker, existen tres redes, ```docker0```, ```none``` y ```host```. Pues bien estos representan tres de los tipos de redes que ofrece docker.
+
+Estos son:
+
+1) Bridge: Es el tipo por defecto si no se especifica nada y funciona creando un puente o bridge entre los contenedores y una interfaz virtual que se crea entre host y contenedores asociados a esa red, de igual forma que hace ```Docker0```.
+
+- Usa NAT y masquerading para dar salida a los contenedores por la salida por defecto que tenga el host.
+- Permite mapear puertos (no superponiendolos entre contenedores que van al mismo bridge).
+- Si se quiere que no tenga salida hacia el exterior se puede marcar como ```internal```.
+
+Ejemplo de creacion de un bridge:
+```bash
+docker network create --driver bridge mi_bridge # Red con salida al exterior
+
+docker network create --driver bridge --internal mi_bridge_sin_salida # Red sin salida al exterior
+
+docker network create --driver bridge --subnet 172.18.0.0/16 mi_bridge_direccionamiento_manual
+```
+
+2) Host: Este tipo no se puede crear pero si se pueden asociar varios contenedores a el. Cuando el contenedor usa la red ```host```, utiliza las direcciones e interfaces que el host tenga disponibles.
+
+```bash
+docker run --network host <nombre_imagen>
+```
+
+3) None: El contenedor no tiene mśa que la interfaz de red de loopback.
+
+4) MacVLAN: Asocia la red a una interfaz de salida, donde cada contenedor tiene su propia direccion MAC y su direccion IP. Para ello es necesario definir a que interfaz se asocia.
+
+Crear red macvlan:
+
+```bash
+docker network create -d macvlan --subnet=192.168.1.0/24 --gateway=192.168.1.1 -o parent=eth0 mi_macvlan
+```
+
+Aqui hay una limitación. El host no puede comunicarse con los contenedores, para solvenrtarlo es necesario creae una interfaz especial en el host:
+
+```bash
+ip link add macvlan0 link eth0 type macvlan mode bridge
+ip addr add 192.168.1.10/24 dev macvlan0
+ip link set macvlan0 up
+```
+
+5) Overlay: La overlay network en Docker es un tipo de red pensada para conectar contenedores que están en distintos hosts (no solo en la misma máquina)
+ 
+Crear una red de overlay:
+
+1) Activar Docker swarm:
+
+```bash
+docker swarm init
+>token
+```
+2) Conectar otro nodo al swarm:
+
+```bash
+docker swarm join --token <token> <ip-manager>:2377
+```
+3) Definir la red:
+
+```bash
+docker network create -d overlay mi_overlay
+```
+4) Generamos los servicios en el primer nodo del swarm:
+
+```bash
+docker service create --name app1 --network mi_overlay nginx
+```
+5) Generamos los servicios en el segundo nodo del swarm:
+
+```bash
+docker service create --name app2 --network mi_overlay alpine
+```
+

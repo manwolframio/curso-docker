@@ -23,18 +23,18 @@ Se basa en la virtualización ligera, es decir, el contenedor va a constituir un
 
 Ejemplo de lanzamiento de un contenedor de ejemplo:
 
-```bash
+```python
 docker run -p 8080:80 httpd
 ```
 Este ejecuta en un contenedor una imagen del servidor web de apache (Como se ejecuta en primer plano debemos detenerlo con control + c)
 
 Si se quisiera ejecutar en foreground o segundo plano:
 
-``` bash
+```python
 docker run -p <puerto externo>:<puerto del contenedor> -d [imagen]
 ```
 Para borrarlo se debe usar
-```bash
+```python
 docker ps # Para ver el nombre del contenedor
 docker stop [nombre del contenedor] 
 ```
@@ -91,13 +91,13 @@ Por ejemplo, Ubuntu indica:
 
 https://hub.docker.com/_/ubuntu 
 
-``` bash
+```python
 FROM ubuntu:22.04
 ```
 
 La propia Ubuntu recomienda que, si se usa, se empiece de la siguiente forma:
 
-``` bash
+```python
 RUN apt-get update && apt-get install -y locales && rm -rf /var/lib/apt/lists/* \
 	&& localedef -i en_US -c -f UTF-8 -A /usr/share/locale/locale.alias en_US.UTF-8
 ENV LANG en_US.utf8
@@ -111,25 +111,25 @@ No está pensado para que sean comandos de ejecución permanente, sino de instal
 
 En el caso de la imagen de antes añadimos:
 
-```bash
+```python
 RUN apt-get install apache2 -y
 ```
 En este caso nuestra aplicación solo tiene una dependencia, que es Apache propiamente, porque solo estamos instalando ese servicio. En caso de necesitar ficheros presentes en el Docker host se puede hacer uso bien de Git
 
-``` bash
+```python
 RUN apt-get install git -y && git clone <el nombre del repo>
 ```
 
 o bien de copiar directamente del Docker host
 
-```bash
+```python
 COPY <origen en el docher host> <Destino en el contenedor>
 ```
 
 Adicionalmente hay más comandos para esta capa, como workdir o users, que permitirán otras funcionalidades, pero para crear una imagen básica estos son suficientes.
 ### Capa 3 o capa CMD
 
-```bash
+```python
 CMD ["apachectl","-D","FOREFROUND"]
 ```
 Este será el programa ejecutado en primer plano. El PID de este proceso será el que defina la vida del contenedor. Si el proceso finaliza, el contenedor se detiene.
@@ -142,7 +142,7 @@ Con el contenedor corriendo podemos ver los logs, el estado, el tiempo de ejecuc
 
 Esta última es la capa de escritura y es a priori temporal, es decir, no modifica la imagen y, cuando el contenedor se detiene, todo lo modificado se elimina. Se dice que es temporal, pero se pueden construir volúmenes y configuraciones almacenables que sean persistentes, aunque nunca cambiarán la imagen.
 
-```bash
+```python
     docker run --name <nombre del contendor> -p <puerto del host>:<puerto del contenedor> [-d] [nombre de la imagen]
 ```
 
